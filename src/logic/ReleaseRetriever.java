@@ -27,9 +27,8 @@ public class ReleaseRetriever {
 	public void retrieveReleases() throws IOException {
 		releases = new ArrayList<>();
 		Integer i;
-		String url = "https://issues.apache.org/jira/rest/api/2/project/" + this.projectName.toUpperCase() + "/versions";
 		
-		JSONArray versions = JSONManager.readJsonArrayFromUrl(url);
+		JSONArray versions = JiraBoundary.getReleases(this.projectName);
 		for (i = 0; i < versions.length(); i++) {
 			String name = "";
 			String id = "";

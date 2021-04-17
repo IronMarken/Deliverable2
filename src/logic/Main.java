@@ -15,6 +15,6 @@ public class Main {
 		for (int i = 0; i< rr.getSize(); i++){
 			rel = releases.get(i);
 			System.out.printf("%d \t %s \t %s \t %s  \t\n", rel.getReleaseIndex(), rel.getReleaseID(), rel.getAllReleaseName(), rel.getReleaseDate().toString());
-		}		
+		}
 	}
 }

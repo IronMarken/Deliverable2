@@ -1,16 +1,0 @@
-
-7logic.Release#getReleaseDate()Ljava/time/LocalDateTime;J
-@/home/marco/Scrivania/GitHub/Deliverable2/src/logic/Release.java' '($"1*Ù
-1J
-@/home/marco/Scrivania/GitHub/Deliverable2/src/logic/Release.java(	 ((˜
-•
-J
-@/home/marco/Scrivania/GitHub/Deliverable2/src/logic/Release.java(	 ((
-%0java.time.LocalDateTime"__id*"* 
-logic.Release"
-releaseDate"m
-J
-@/home/marco/Scrivania/GitHub/Deliverable2/src/logic/Release.java( ((
-
-%0java.time.LocalDateTimeB
-logic.Release
