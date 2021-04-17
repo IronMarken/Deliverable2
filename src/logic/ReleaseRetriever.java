@@ -58,13 +58,17 @@ public class ReleaseRetriever {
 	
 	private void addRelease (String strDate, String name, String id) {
 		LocalDate date = LocalDate.parse(strDate);
-		LocalDateTime dateTime = date.atStartOfDay();		
-		Release r = new Release(dateTime, name, id);
+		LocalDateTime dateTime = date.atStartOfDay();
 		
-		//replace releases with same date
+		//add only name to a release that already exists with same date
 		if( this.releases.stream().anyMatch(rel -> rel.getReleaseDate().equals(dateTime)))
-			this.releases.replaceAll(rel -> rel.getReleaseDate().equals(dateTime) ? r : rel);
-		else this.releases.add(r);
+			this.releases.stream().filter(rel -> rel.getReleaseDate().equals(dateTime)).forEach(relResponse -> relResponse.setSingleReleaseName(name));
+		else {
+			List<String> nameList = new ArrayList<>();
+			nameList.add(name);
+			Release r = new Release(dateTime, nameList, id);
+			this.releases.add(r);
+		}
 	}
 	
 	public int getSize() {
