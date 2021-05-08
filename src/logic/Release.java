@@ -1,29 +1,40 @@
 package logic;
 
 import java.time.LocalDateTime;
-import java.util.List;
-
 
 public class Release {
 	
+	//used for Proportion
 	private int releaseIndex;
+	//date from git
 	private LocalDateTime releaseDate;
 	//manage releases with same release date
-	private List<String> releaseName;
+	private String jiraName;
+	private String gitName;
 	private String releaseID;
+	private String sha;
 	
 	
-	public Release(int releaseIndex, LocalDateTime releaseDate, List<String> releaseName, String releaseID) {
+	public Release(int releaseIndex, LocalDateTime releaseDate, String jiraName, String releaseID) {
 		this.releaseIndex = releaseIndex;
 		this.releaseDate = releaseDate;
-		this.releaseName = releaseName;
+		this.jiraName = jiraName;
 		this.releaseID = releaseID;
+		this.gitName = null;
 	}
 	
-	public Release(LocalDateTime releaseDate, List<String> releaseName, String releaseID) {
+	public Release(LocalDateTime releaseDate, String jiraName, String releaseID) {
 		this.releaseDate = releaseDate;
-		this.releaseName = releaseName;
+		this.jiraName = jiraName;
 		this.releaseID = releaseID;
+		this.gitName = null;
+	}
+	
+	public Release(String jiraName, String releaseID) {
+		this.releaseDate = null;
+		this.jiraName = jiraName;
+		this.releaseID = releaseID;
+		this.gitName = null;
 	}
 	
 	public void setReleaseIndex(int index) {
@@ -42,20 +53,20 @@ public class Release {
 		return this.releaseDate;
 	}
 	
-	public void setAllReleaseName(List<String> releaseName) {
-		this.releaseName = releaseName;
+	public String getJiraName() {
+		return this.jiraName;
 	}
 	
-	public List<String> getAllReleaseName() {
-		return this.releaseName;
+	public void setJiraName(String jiraName) {
+		this.jiraName = jiraName;
 	}
 	
-	public void setSingleReleaseName(String name) {
-		this.releaseName.add(name);
+	public void setGitName(String gitName) {
+		this.gitName = gitName;
 	}
 	
-	public String getSingleReleaseName(int index) {
-		return this.releaseName.get(index);
+	public String getGitName() {
+		return this.gitName;
 	}
 	
 	public void setReleaseID(String releaseID) {
@@ -64,6 +75,16 @@ public class Release {
 	
 	public String getReleaseID() {
 		return this.releaseID;
-	}		
+	}
+	
+	public void setSha(String sha) {
+		this.sha = sha;
+	}
+	
+	public String getSha() {
+		return this.sha;
+	}
+	
+	
 	
 }

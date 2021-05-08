@@ -1,7 +1,6 @@
 package logic;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,35 +11,53 @@ import org.json.JSONArray;
 
 public class ReleaseRetriever {
 	
+	
+	private GitBoundary gb;
+	private ReleaseNameAdapter rna;
 	private String projectName;
 	private List<Release> releases;
+	//considered only for references in the issues versions
+	private List<Release> unreleased;
+	
 	private int numReleases;
 	
-	public ReleaseRetriever(String projectName) {
+	public ReleaseRetriever(String projectName, GitBoundary gb) {
 		this.projectName = projectName;
+		this.gb = gb;
 	}
 	
-	public ReleaseRetriever() {
+	public ReleaseRetriever(GitBoundary gb) {
 		this.projectName = "";
+		this.gb = gb;
 	}
+	
+	public void setAdapter(ReleaseNameAdapter rna) {
+		this.rna = rna;
+	}
+
 	
 	public void retrieveReleases() throws IOException {
 		releases = new ArrayList<>();
+		unreleased = new ArrayList<>();
 		Integer i;
 		
 		JSONArray versions = JiraBoundary.getReleases(this.projectName);
 		for (i = 0; i < versions.length(); i++) {
 			String name = "";
-			String id = "";
+			String id = ""; 
 			
-			//Add only releases with date
-			if(versions.getJSONObject(i).has("releaseDate")) {
-				if (versions.getJSONObject(i).has("name"))
-					name = versions.getJSONObject(i).getString("name");
-				if (versions.getJSONObject(i).has("id"))
-					id = versions.getJSONObject(i).getString("id");
-				this.addRelease(versions.getJSONObject(i).getString("releaseDate"), name, id);
-			}
+			//get params
+			if(versions.getJSONObject(i).has("name"))
+				name = versions.getJSONObject(i).getString("name");
+			if(versions.getJSONObject(i).has("id"))
+				id = versions.getJSONObject(i).getString("id");
+			
+			//add all realeases with a Date or released
+			if(versions.getJSONObject(i).has("releaseDate") || versions.getJSONObject(i).getBoolean("released") ) 
+				this.addRelease(name, id);				
+			//add to not released
+			else 
+				this.addUnreleased(name, id);
 		}
 		
 		// order releases 		
@@ -52,26 +69,53 @@ public class ReleaseRetriever {
 		//set index
 		for (i = 0; i < this.numReleases; i++ ) {
 			this.releases.get(i).setReleaseIndex(i+1);
-		}		
+		}
+		//for unreleased maxIndex + 1
+		for(int j = 0; j< this.unreleased.size(); j++) {
+			this.unreleased.get(j).setReleaseIndex(i+1);
+		}
 	}
 	
-	private void addRelease (String strDate, String name, String id) {
-		LocalDate date = LocalDate.parse(strDate);
-		LocalDateTime dateTime = date.atStartOfDay();
+	private void addRelease (String name, String id) throws IOException {
+
+		//getDate and SHA from Git
+		String sha;
+		LocalDateTime ldt;
 		
-		//add only name to a release that already exists with same date
-		if( this.releases.stream().anyMatch(rel -> rel.getReleaseDate().equals(dateTime)))
-			this.releases.stream().filter(rel -> rel.getReleaseDate().equals(dateTime)).forEach(relResponse -> relResponse.setSingleReleaseName(name));
-		else {
-			List<String> nameList = new ArrayList<>();
-			nameList.add(name);
-			Release r = new Release(dateTime, nameList, id);
-			this.releases.add(r);
+		//derive gitName with Adapter
+		String gitName = this.rna.deriveGitName(name);
+		
+		ldt = this.gb.getReleaseDate(gitName);
+		sha = this.gb.getReleaseSha(gitName);
+		if(ldt != null && sha != null) {
+			Release r = new Release(name, id);
+			r.setGitName(gitName);
+			r.setReleaseDate(ldt);
+			r.setSha(sha);
+			this.releases.add(r);	
 		}
+	}
+	
+	private void addUnreleased(String name, String id){
+		
+		//derive gitName with Adapter
+		String gitName = this.rna.deriveGitName(name);
+		
+		//add only for a reference
+		Release r = new Release(name, id);
+		r.setGitName(gitName);
+		r.setReleaseDate(null);
+		r.setSha(null);
+		
+		this.unreleased.add(r);
 	}
 	
 	public int getSize() {
 		return this.numReleases;
+	}
+	
+	public List<Release> getUnreleased(){
+		return this.unreleased;
 	}
 	
 	public List<Release> getReleases(){
