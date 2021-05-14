@@ -18,7 +18,7 @@ public class Main {
 		
 		GitBoundary gb = new GitBoundary(gitUrl);
 		ReleaseNameAdapter rna = new ReleaseNameAdapter(0, "release-");
-		ReleaseRetriever rr = new ReleaseRetriever(projName, gb);
+		ReleaseManager rr = new ReleaseManager(projName, gb);
 		rr.setAdapter(rna);
 		rr.retrieveReleases();
 		
@@ -43,7 +43,6 @@ public class Main {
 					System.out.printf("%s \t %s\n", rel.getGitName(),classes.get(j));
 				}*/
 			System.out.printf("%s \t %d\n", rel.getGitName(), classes.size());
-			
 		}
 		
 		

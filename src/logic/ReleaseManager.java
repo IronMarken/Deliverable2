@@ -9,7 +9,7 @@ import java.util.List;
 import org.json.JSONArray;
 
 
-public class ReleaseRetriever {
+public class ReleaseManager {
 	
 	
 	private GitBoundary gb;
@@ -21,12 +21,12 @@ public class ReleaseRetriever {
 	
 	private int numReleases;
 	
-	public ReleaseRetriever(String projectName, GitBoundary gb) {
+	public ReleaseManager(String projectName, GitBoundary gb) {
 		this.projectName = projectName;
 		this.gb = gb;
 	}
 	
-	public ReleaseRetriever(GitBoundary gb) {
+	public ReleaseManager(GitBoundary gb) {
 		this.projectName = "";
 		this.gb = gb;
 	}
