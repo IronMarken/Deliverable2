@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -103,6 +105,26 @@ public class GitBoundary {
 			
 		}	
 		return sha;
+	}
+	
+	public List<String> getReleaseClasses(String gitName) throws IOException{
+		List<String> classes = new ArrayList<>();
+		
+		Process process = Runtime.getRuntime().exec(new String[] {"git", "ls-tree", "-r", gitName, "--name-only"}, null, this.workingCopy);
+		BufferedReader reader = new BufferedReader (new InputStreamReader (process.getInputStream()));
+		String line;
+		String className = null;
+		
+		while((line = reader.readLine()) != null) {
+			className = line;
+			
+			//remove last \n
+			className = className.split("\n")[0]; 
+			if(className.endsWith(".java")) 
+				classes.add(className);
+		}
+		
+		return classes;
 	}
 
 }

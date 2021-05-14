@@ -110,6 +110,16 @@ public class ReleaseRetriever {
 		this.unreleased.add(r);
 	}
 	
+	public void retrieveClasses() throws IOException{
+		Release rel;
+		List<String> classes;
+		for (int i = 0; i < this.releases.size(); i++) {
+			rel = this.releases.get(i);
+			classes = this.gb.getReleaseClasses(rel.getGitName());
+			rel.setClasses(classes);
+		}
+	}
+	
 	public int getSize() {
 		return this.numReleases;
 	}

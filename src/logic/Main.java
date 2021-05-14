@@ -25,12 +25,29 @@ public class Main {
 		System.out.println("RELEASED\n\n");
 		System.out.printf("Index \t VersionID \t Version Name \t Git Name \t SHA \t Data \t\n");
 		List<Release> releases = rr.getReleases();
+		rr.retrieveClasses();
 		Release rel;
-		for (int i = 0; i< rr.getSize(); i++){
+		List<String> classes;
+		int i,j;
+		for (i = 0; i< rr.getSize(); i++){
 			rel = releases.get(i);
 			System.out.printf("%d \t %s \t %s \t %s \t%s \t %s \t\n", rel.getReleaseIndex(), rel.getReleaseID(), rel.getJiraName(), rel.getGitName(), rel.getSha(), rel.getReleaseDate());
 		}
 		
+		System.out.println("Release git name \t Class name\n");
+		for(i = 0; i < rr.getSize(); i++) {
+			rel = releases.get(i);
+			classes = rel.getClasses();
+			/*if(rel.getGitName().equals( "release-1.10.0"))
+				for(j = 0; j < classes.size(); j++ ) {
+					System.out.printf("%s \t %s\n", rel.getGitName(),classes.get(j));
+				}*/
+			System.out.printf("%s \t %d\n", rel.getGitName(), classes.size());
+			
+		}
+		
+		
+		/*
 		int size = releases.size();
 		
 		System.out.println("\n\nUNRELEASED\n\n");
@@ -42,6 +59,6 @@ public class Main {
 		}
 
 		size += releases.size();
-		System.out.println("\n\nTotal size "+size);
+		System.out.println("\n\nTotal size "+size);*/
 	}
 }
