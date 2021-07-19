@@ -48,6 +48,7 @@ public class GitBoundary {
 			Git.cloneRepository().setURI(gitUrl).setDirectory(this.workingCopy).call();
 			LOGGER.log(Level.INFO,"Project cloned");
 		}else
+			LOGGER.log(Level.INFO, "Project exists pulling");
 			//pull
 			this.pull();		
 	}

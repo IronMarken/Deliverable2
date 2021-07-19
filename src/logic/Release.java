@@ -2,12 +2,14 @@ package logic;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class Release {
 	
 	//used for Proportion
-	private int releaseIndex;
+	private int index;
 	//date from git
 	private LocalDateTime releaseDate;
 	//manage releases with same release date
@@ -19,7 +21,7 @@ public class Release {
 	
 	
 	public Release(int releaseIndex, LocalDateTime releaseDate, String jiraName, String releaseID) {
-		this.releaseIndex = releaseIndex;
+		this.index = releaseIndex;
 		this.releaseDate = releaseDate;
 		this.jiraName = jiraName;
 		this.releaseID = releaseID;
@@ -43,12 +45,12 @@ public class Release {
 		this.javaClasses = new ArrayList<>();
 	}
 	
-	public void setReleaseIndex(int index) {
-		this.releaseIndex = index;
+	public void setIndex(int index) {
+		this.index = index;
 	}
 	
-	public int getReleaseIndex() {
-		return this.releaseIndex;
+	public int getIndex() {
+		return this.index;
 	}
 	
 	public void setReleaseDate(LocalDateTime releaseDate) {
@@ -91,12 +93,32 @@ public class Release {
 		return this.sha;
 	}
 	
+	
+	
 	public void setClasses(List<String> classes) {
 		this.javaClasses = classes;
 	}
 	
 	public List<String> getClasses(){
 		return this.javaClasses;
+	}
+	
+	public static Release getMaxRelease(List<Release> list) {
+		Release rel = null;
+		
+		if(!list.isEmpty())
+			rel = Collections.max(list, Comparator.comparing(Release::getIndex));
+		
+		return rel;
+	}
+	
+	public static Release getMinRelease(List<Release> list) {
+		Release rel = null;
+		
+		if(!list.isEmpty())
+			rel = Collections.min(list, Comparator.comparing(Release::getIndex));
+		
+		return rel;
 	}
 	
 	

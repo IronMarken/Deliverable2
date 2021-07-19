@@ -16,10 +16,10 @@ public class ReleaseManager {
 	private ReleaseNameAdapter rna;
 	private String projectName;
 	private List<Release> releases;
-	//considered only for references in the issues versions
+	//considered only for references in the issue's versions
 	private List<Release> unreleased;
-	
-	private int numReleases;
+	private List<Release> myReleases;
+
 	
 	public ReleaseManager(String projectName, GitBoundary gb) {
 		this.projectName = projectName;
@@ -37,8 +37,9 @@ public class ReleaseManager {
 
 	
 	public void retrieveReleases() throws IOException {
-		releases = new ArrayList<>();
-		unreleased = new ArrayList<>();
+		this.releases = new ArrayList<>();
+		this.unreleased = new ArrayList<>();
+		this.myReleases = new ArrayList<>();
 		Integer i;
 		
 		JSONArray versions = JiraBoundary.getReleases(this.projectName);
@@ -63,17 +64,17 @@ public class ReleaseManager {
 		// order releases 		
 		Collections.sort(this.releases, ( Release r1, Release r2) -> r1.getReleaseDate().compareTo(r2.getReleaseDate()));
 		
-		//set size
-		this.numReleases = this.releases.size();
-		
 		//set index
-		for (i = 0; i < this.numReleases; i++ ) {
-			this.releases.get(i).setReleaseIndex(i+1);
+		for (i = 0; i < this.releases.size(); i++ ) {
+			this.releases.get(i).setIndex(i+1);
 		}
 		//for unreleased maxIndex + 1
 		for(int j = 0; j< this.unreleased.size(); j++) {
-			this.unreleased.get(j).setReleaseIndex(i+1);
+			this.unreleased.get(j).setIndex(i+1);
 		}
+		
+		//add releases considered for the anlysis
+		this.myReleases = this.releases.subList(0, this.releases.size()/2);
 	}
 	
 	private void addRelease (String name, String id) throws IOException {
@@ -118,11 +119,24 @@ public class ReleaseManager {
 			classes = this.gb.getReleaseClasses(rel.getGitName());
 			rel.setClasses(classes);
 		}
+	}	
+	
+	
+	public Release getReleaseByGitName(String gitName) {
+		Release rel;
+		//if unreleased exists only Jira Name
+		rel = this.releases.stream().filter(release -> gitName.equals(release.getGitName())).findAny().orElse(null);
+		return rel;
 	}
 	
-	public int getSize() {
-		return this.numReleases;
+	public Release getReleaseByJiraName(String jiraName) {
+		Release rel;
+		rel = this.releases.stream().filter(release -> jiraName.equals(release.getJiraName())).findAny().orElse(null);
+		if(rel == null) 
+			rel = this.unreleased.stream().filter(release -> jiraName.equals(release.getJiraName())).findAny().orElse(null);
+		return rel;
 	}
+	
 	
 	public List<Release> getUnreleased(){
 		return this.unreleased;
@@ -132,5 +146,12 @@ public class ReleaseManager {
 		return this.releases;
 	}
 	
+	public List<Release> getConsideredReleases(){
+		return this.myReleases;
+	}
+	
+	public Release getLastReleaseConsidered() {
+		return this.myReleases.get(this.myReleases.size()-1);
+	}
 
 }
