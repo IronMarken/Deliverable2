@@ -19,7 +19,12 @@ public class ReleaseManager {
 	//considered only for references in the issue's versions
 	private List<Release> unreleased;
 	private List<Release> myReleases;
-
+	
+	public ReleaseManager(String projectName, GitBoundary gb, ReleaseNameAdapter rna) {
+		this.projectName = projectName;
+		this.gb = gb;
+		this.rna = rna;
+	}
 	
 	public ReleaseManager(String projectName, GitBoundary gb) {
 		this.projectName = projectName;
@@ -35,8 +40,14 @@ public class ReleaseManager {
 		this.rna = rna;
 	}
 
+	public void setupReleases() throws IOException {
+		retrieveReleases();
+		retrieveClasses();
+		retrieveCommit();
+	}
 	
-	public void retrieveReleases() throws IOException {
+	
+	private void retrieveReleases() throws IOException {
 		this.releases = new ArrayList<>();
 		this.unreleased = new ArrayList<>();
 		this.myReleases = new ArrayList<>();
@@ -111,7 +122,7 @@ public class ReleaseManager {
 		this.unreleased.add(r);
 	}
 	
-	public void retrieveClasses() throws IOException{
+	private void retrieveClasses() throws IOException{
 		Release rel;
 		List<String> classes;
 		for (int i = 0; i < this.myReleases.size(); i++) {
@@ -121,7 +132,7 @@ public class ReleaseManager {
 		}		
 	}
 	
-	public void retrieveCommit() throws IOException{
+	private void retrieveCommit() throws IOException{
 		Release rel;
 		List<Commit> commits;
 		for(int i=0; i < this.myReleases.size(); i++) {
