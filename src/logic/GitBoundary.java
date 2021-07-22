@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,7 +23,7 @@ public class GitBoundary {
 	
 	private File workingCopy;
 	private static final Logger LOGGER = Logger.getLogger(GitBoundary.class.getName());
-	
+	private static final String DATE_FORMAT = "--date=iso";
 	
 	public GitBoundary(String gitUrl) throws GitAPIException, IOException {
 		
@@ -73,7 +74,7 @@ public class GitBoundary {
 	
 	public LocalDateTime getReleaseDate(String gitName) throws IOException{
 		
-		Process process = Runtime.getRuntime().exec(new String[] {"git", "log", gitName, "-1", "--pretty=format:%cd" ,"--date=iso" }, null, this.workingCopy);
+		Process process = Runtime.getRuntime().exec(new String[] {"git", "log", gitName, "-1", "--pretty=format:%cd" ,DATE_FORMAT }, null, this.workingCopy);
 		BufferedReader reader = new BufferedReader (new InputStreamReader (process.getInputStream()));
 		String line;
 		String date = null;
@@ -93,7 +94,7 @@ public class GitBoundary {
 	}
 	
 	public String getReleaseSha(String gitName) throws IOException{
-		Process process = Runtime.getRuntime().exec(new String[] {"git", "log", gitName,"-1", "--pretty=format:%H" ,"--date=iso" }, null, this.workingCopy);
+		Process process = Runtime.getRuntime().exec(new String[] {"git", "log", gitName,"-1", "--pretty=format:%H" }, null, this.workingCopy);
 		BufferedReader reader = new BufferedReader (new InputStreamReader (process.getInputStream()));
 		String line;
 		String sha = null;
@@ -124,8 +125,40 @@ public class GitBoundary {
 			if(className.endsWith(".java")) 
 				classes.add(className);
 		}
-		
 		return classes;
+	}
+	
+	public List<Commit> getReleaseCommits(String gitName) throws IOException{
+		
+		List<Commit> commits = new ArrayList<>();
+		
+		Process process = Runtime.getRuntime().exec(new String[] {"git", "log", gitName ,"--pretty=format:%H---%s---%an---%cd---", DATE_FORMAT}, null, this.workingCopy);
+		BufferedReader reader = new BufferedReader (new InputStreamReader (process.getInputStream()));
+		String line;
+		String[] splitted;
+		
+		String sha;
+		String message;
+		String author;
+		String date;
+		Commit commit;
+		
+		while((line = reader.readLine()) != null) {
+			if(!line.isEmpty()) {
+				splitted = line.split("---");
+				sha = splitted[0];
+				message = splitted[1];
+				author = splitted[2];
+				//get only date 
+				date = splitted[3].split(" ")[0];
+				
+				commit = new Commit(date, sha, author, message);
+				commits.add(commit);
+			}
+		}
+		//order by date
+		Collections.sort(commits, (Commit c1, Commit c2) -> c1.getDate().compareTo(c2.getDate()));
+		return commits;
 	}
 
 }

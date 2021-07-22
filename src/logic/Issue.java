@@ -3,6 +3,7 @@ package logic;
 public class Issue {
 	
 	private String id;
+	private Integer index;
 	private String key;
 	private Release fixVersion;
 	//AV where exists is considered as injected version
@@ -16,7 +17,13 @@ public class Issue {
 		this.key = key;
 		this.fixVersion = fixVersion;
 		this.injectedVersion = injectedVersion;
+		this.index = Integer.parseInt(this.key.split("-")[1]);
 	}
+	
+	public Integer getIndex() {
+		return this.index;
+	}
+	
 	
 	public void setId(String id) {
 		this.id = id;

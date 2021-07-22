@@ -12,12 +12,12 @@ public class Release {
 	private int index;
 	//date from git
 	private LocalDateTime releaseDate;
-	//manage releases with same release date
 	private String jiraName;
 	private String gitName;
 	private String releaseID;
 	private String sha;
 	private List<String> javaClasses;
+	private List<Commit> commitList;
 	
 	
 	public Release(int releaseIndex, LocalDateTime releaseDate, String jiraName, String releaseID) {
@@ -27,6 +27,7 @@ public class Release {
 		this.releaseID = releaseID;
 		this.gitName = null;
 		this.javaClasses = new ArrayList<>();
+		this.commitList = new ArrayList<>();
 	}
 	
 	public Release(LocalDateTime releaseDate, String jiraName, String releaseID) {
@@ -35,6 +36,7 @@ public class Release {
 		this.releaseID = releaseID;
 		this.gitName = null;
 		this.javaClasses = new ArrayList<>();
+		this.commitList = new ArrayList<>();
 	}
 	
 	public Release(String jiraName, String releaseID) {
@@ -43,6 +45,7 @@ public class Release {
 		this.releaseID = releaseID;
 		this.gitName = null;
 		this.javaClasses = new ArrayList<>();
+		this.commitList = new ArrayList<>();
 	}
 	
 	public void setIndex(int index) {
@@ -101,6 +104,14 @@ public class Release {
 	
 	public List<String> getClasses(){
 		return this.javaClasses;
+	}
+	
+	public void setCommits(List<Commit> commits) {
+		this.commitList = commits;
+	}
+	
+	public List<Commit> getCommits(){
+		return this.commitList;
 	}
 	
 	public static Release getMaxRelease(List<Release> list) {

@@ -114,12 +114,22 @@ public class ReleaseManager {
 	public void retrieveClasses() throws IOException{
 		Release rel;
 		List<String> classes;
-		for (int i = 0; i < this.releases.size(); i++) {
-			rel = this.releases.get(i);
+		for (int i = 0; i < this.myReleases.size(); i++) {
+			rel = this.myReleases.get(i);
 			classes = this.gb.getReleaseClasses(rel.getGitName());
 			rel.setClasses(classes);
+		}		
+	}
+	
+	public void retrieveCommit() throws IOException{
+		Release rel;
+		List<Commit> commits;
+		for(int i=0; i < this.myReleases.size(); i++) {
+			rel = this.myReleases.get(i);
+			commits = this.gb.getReleaseCommits(rel.getGitName());
+			rel.setCommits(commits);
 		}
-	}	
+	}
 	
 	
 	public Release getReleaseByGitName(String gitName) {

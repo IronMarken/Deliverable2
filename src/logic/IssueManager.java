@@ -2,6 +2,7 @@ package logic;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -11,7 +12,6 @@ public class IssueManager {
 	
 	private String projectName;
 	private List<Issue> issues;
-	//I think i need it
 	private ReleaseManager rm;
 	
 	public IssueManager(String projectName, ReleaseManager rm) {
@@ -103,10 +103,12 @@ public class IssueManager {
 				fixVersion = this.retrieveFixedVersion(issuesJson.getJSONObject(i).getJSONObject("fields").getJSONArray("fixVersions"));
 				
 				issue = new Issue(id, key, fixVersion, injectedVersion);
-				this.issues.add(0, issue);
+				this.issues.add(issue);
 			}
 			
-		}while(i < total);		
+		}while(i < total);
+		//reorder issues
+		Collections.sort(this.issues, (Issue i1, Issue i2) -> i1.getIndex().compareTo(i2.getIndex()));
 	}
 
 }
