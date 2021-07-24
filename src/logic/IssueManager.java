@@ -4,15 +4,19 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class IssueManager {
 	
+	private static final Logger LOGGER = Logger.getLogger(IssueManager.class.getName());
 	private String projectName;
 	private List<Issue> issues;
 	private ReleaseManager rm;
+	private GitBoundary gb;
 	
 	public IssueManager(String projectName, ReleaseManager rm) {
 		this.projectName = projectName;
@@ -20,9 +24,20 @@ public class IssueManager {
 		this.issues = new ArrayList<>();
 	}
 	
+	public IssueManager(String projectName, ReleaseManager rm, GitBoundary gb) {
+		this.projectName = projectName;
+		this.rm = rm;
+		this.gb = gb;
+		this.issues = new ArrayList<>();
+	}
+	
 	
 	public List<Issue> getIssues(){
 		return this.issues;
+	}
+	
+	public void setGitBoundary(GitBoundary gb) {
+		this.gb = gb;
 	}
 	
 	private Release retrieveFixedVersion(JSONArray ja) {
@@ -87,6 +102,13 @@ public class IssueManager {
 		String id;
 		Release injectedVersion;
 		Release fixVersion;
+		List<Commit> commitList;
+		
+		int noFixedCount = 0;
+		int count = 0;
+		int totalCount = 0;
+		
+		LOGGER.log(Level.INFO, "Getting issues and related commits");
 		
 		do {
 			j = i + 1000;
@@ -102,13 +124,58 @@ public class IssueManager {
 				injectedVersion = this.retrieveInjectedVersion(issuesJson.getJSONObject(i).getJSONObject("fields").getJSONArray("versions"));
 				fixVersion = this.retrieveFixedVersion(issuesJson.getJSONObject(i).getJSONObject("fields").getJSONArray("fixVersions"));
 				
-				issue = new Issue(id, key, fixVersion, injectedVersion);
-				this.issues.add(issue);
+				totalCount ++;
+				
+				//filtering null fixVersions
+				if(fixVersion != null) {
+					noFixedCount ++;
+					issue = new Issue(id, key, fixVersion, injectedVersion);
+					commitList = this.gb.getIssueCommit(issue.getIndex());
+					
+					
+					if(!(injectedVersion == null && commitList.isEmpty())) {
+						//add also issues with no commits but with injected not null just to help proportion with more data
+						issue.setCommits(commitList);
+						this.issues.add(issue);
+						count ++;
+					}					
+				}
+
 			}
 			
 		}while(i < total);
 		//reorder issues
 		Collections.sort(this.issues, (Issue i1, Issue i2) -> i1.getIndex().compareTo(i2.getIndex()));
+		//first filter before proportion
+		LOGGER.log(Level.INFO, "First filtering for issues");
+		this.issues = filterIssue(this.issues);
+		String report = "REPORT\n"+"Total issues "+totalCount+".\nIssues with not null Fixed "
+						+noFixedCount+".\nIssues with commits or no commits but not null injected  "
+						+count+".\nAfter first filter "+this.issues.size();
+		
+		LOGGER.log(Level.INFO, report);
 	}
-
+	
+	private List<Issue> filterIssue(List<Issue> issueList){
+		List<Issue> filteredList = new ArrayList<>();
+		Issue issue;
+		Release lastRelease;
+		Release injectedVersion;
+		Release fixVersion;
+		
+		lastRelease = this.rm.getLastReleaseConsidered();
+		
+		for(int i=0; i < issueList.size(); i++) {
+			issue = issueList.get(i);
+			injectedVersion = issue.getInjectedVersion();
+			fixVersion = issue.getInjectedVersion();	
+			
+			//filter injected > fix or injected > last Release considered
+			if(!(injectedVersion != null && (injectedVersion.getIndex() > fixVersion.getIndex() || injectedVersion.getIndex() > lastRelease.getIndex()))) 
+				filteredList.add(issue);				
+				
+		}
+		return filteredList;
+	}
+	
 }

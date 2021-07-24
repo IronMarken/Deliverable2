@@ -5,13 +5,15 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.json.JSONArray;
 
 
 public class ReleaseManager {
 	
-	
+	private static final Logger LOGGER = Logger.getLogger(ReleaseManager.class.getName());
 	private GitBoundary gb;
 	private ReleaseNameAdapter rna;
 	private String projectName;
@@ -44,10 +46,14 @@ public class ReleaseManager {
 		retrieveReleases();
 		retrieveClasses();
 		retrieveCommit();
+		String report = "STEUP COMPLETED\nTotal releases "+this.releases.size()+
+				"\nTotal unreleased "+this.unreleased.size()+"\nTotal considered releases "+this.myReleases.size();
+		LOGGER.log(Level.INFO, report);
 	}
 	
 	
 	private void retrieveReleases() throws IOException {
+		LOGGER.log(Level.INFO, "Getting releases");
 		this.releases = new ArrayList<>();
 		this.unreleased = new ArrayList<>();
 		this.myReleases = new ArrayList<>();
@@ -123,6 +129,7 @@ public class ReleaseManager {
 	}
 	
 	private void retrieveClasses() throws IOException{
+		LOGGER.log(Level.INFO, "Getting classes");
 		Release rel;
 		List<String> classes;
 		for (int i = 0; i < this.myReleases.size(); i++) {

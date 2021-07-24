@@ -11,6 +11,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.PullCommand;
@@ -24,12 +26,15 @@ public class GitBoundary {
 	private File workingCopy;
 	private static final Logger LOGGER = Logger.getLogger(GitBoundary.class.getName());
 	private static final String DATE_FORMAT = "--date=iso";
+	private String projectName;
 	
 	public GitBoundary(String gitUrl) throws GitAPIException, IOException {
 		
 		//Parse project name
 		String[] splitted = gitUrl.split("/");
-		String projectName = splitted[splitted.length -1];
+		this.projectName = splitted[splitted.length -1];
+		
+		LOGGER.log(Level.INFO, this.projectName);
 		
 		//check repo dir exists
 		File localDir = new File ("repo");
@@ -159,6 +164,50 @@ public class GitBoundary {
 		//order by date
 		Collections.sort(commits, (Commit c1, Commit c2) -> c1.getDate().compareTo(c2.getDate()));
 		return commits;
+	}
+	
+	
+	public List<Commit> getIssueCommit(Integer index) throws IOException{
+		
+		List<Commit> commits = new ArrayList<>();
+		
+		Process process = Runtime.getRuntime().exec(new String[] {"git", "log","--pretty=format:%H---%s---%an---%cd---", DATE_FORMAT}, null, this.workingCopy);
+		BufferedReader reader = new BufferedReader (new InputStreamReader (process.getInputStream()));
+		String line;
+		String[] splitted;
+		
+		String sha;
+		String message;
+		String author;
+		String date;
+		Commit commit;
+		
+		Pattern pattern;
+		Matcher matcher;
+		
+		while((line = reader.readLine()) != null) {
+			if(!line.isEmpty()) {
+				splitted = line.split("---");
+				sha = splitted[0];
+				message = splitted[1];
+				author = splitted[2];
+				//get only date 
+				date = splitted[3].split(" ")[0];
+				
+				//regular expression for matching
+				pattern = Pattern.compile("(ISSUE|"+this.projectName.toUpperCase()+")(-| #)"+index+"(:|\\.)",Pattern.CASE_INSENSITIVE);
+				matcher = pattern.matcher(message);
+				
+				if(matcher.find()) {		
+					commit = new Commit(date, sha, author, message);
+					commits.add(commit);
+				}
+			}
+		}
+		//order by date
+		Collections.sort(commits, (Commit c1, Commit c2) -> c1.getDate().compareTo(c2.getDate()));
+		return commits;
+		
 	}
 
 }

@@ -31,16 +31,36 @@ public class Main {
 		List<Release> considered = rr.getConsideredReleases();
 		
 		
-		IssueManager im = new IssueManager(projName, rr);
-		im.retrieveIssues();
-		List<Issue> issues = im.getIssues();
+
+		
+		
 		
 		List<Release> releases = rr.getReleases();
+		
+		IssueManager im = new IssueManager(projName, rr, gb);
+		System.out.println("Before");
+		im.retrieveIssues();
+		
+		List<Issue> issues = im.getIssues();
 		
 		Release rel;
 		Issue issue;
 		List<String> classes;
+		List<Commit> issueCommits;
 		int i,j;
+		
+		
+		/*System.out.println("Issue commits");
+		for(i=0; i< issues.size(); i++) {
+			issue = issues.get(i);
+			System.out.println("Issue "+issue.getIndex());
+			issueCommits = issue.getCommits();
+			for(j=0; j< issueCommits.size(); j++) {
+				commit = issueCommits.get(j);
+				System.out.println("\tsha "+commit.getSha()+" date "+commit.getDate()+" author "+commit.getDate()+" message "+commit.getMessage());
+			}
+		}*/
+		
 		
 		/*System.out.println("Commits");
 		for(i=0; i<considered.size(); i++){
