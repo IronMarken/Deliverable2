@@ -181,5 +181,27 @@ public class ReleaseManager {
 	public Release getLastReleaseConsidered() {
 		return this.myReleases.get(this.myReleases.size()-1);
 	}
+	
+	public Release getReleaseFromDate(String date) {
+		Release rel;
+		Release actual;
+		rel = null;
+		
+		LocalDateTime ldt = LocalDate.parse(date).atStartOfDay();
+		
+		//return the first release with first date before date
+		for(int i=0; i<this.releases.size(); i++) {
+			actual = this.releases.get(i);
+			if(ldt.isBefore(actual.getReleaseDate())) {
+				return actual;
+			}
+		}
+		
+		//if no release match get the first unreleased or null
+		if(!this.unreleased.isEmpty())	
+			rel = this.unreleased.get(0);
+		
+		return rel;
+	}
 
 }

@@ -11,6 +11,7 @@ public class Issue {
 	private Release fixVersion;
 	//AV where exists is considered as injected version
 	private Release injectedVersion;
+	private Release openingVersion;
 	private List<Commit> commits;
 	
 	
@@ -70,5 +71,13 @@ public class Issue {
 	
 	public Release getInjectedVersion() {
 		return this.injectedVersion;
+	}
+	
+	public void setOpeningVersion(Release openingVersion) {
+		this.openingVersion = openingVersion;
+	}
+	
+	public Release getOpeningVersion() {
+		return this.openingVersion;
 	}
 }

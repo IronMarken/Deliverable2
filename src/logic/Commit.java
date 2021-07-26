@@ -9,7 +9,6 @@ public class Commit {
 	private String sha;
 	private String author;
 	private String message;
-	// list of touched classes and what changes ??
 	
 	public Commit() {}
 	

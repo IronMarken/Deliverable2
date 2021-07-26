@@ -1,6 +1,8 @@
 package logic;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,8 +13,8 @@ public class Main {
 	
 	public static void main(String[] args) throws IOException, GitAPIException {
 		
-		String gitUrl = "https://github.com/apache/avro";
-		//String gitUrl = "https://github.com/apache/bookkeeper";
+		//String gitUrl = "https://github.com/apache/avro";
+		String gitUrl = "https://github.com/apache/bookkeeper";
 		
 		//Parse project name
 		String[] splitted = gitUrl.split("/");
@@ -73,13 +75,13 @@ public class Main {
 			}
 		}*/
 		
-		/*System.out.println("Issues");
+		System.out.println("Issues");
 		for(i=0 ; i < issues.size(); i++) {
 			issue = issues.get(i);
-			System.out.printf("%s \t %s \t %d\t\n", issue.getId(), issue.getKey(), issue.getIndex());
-		}*/
+			System.out.printf("%s \t %s \t %d \t %s\t %d \t\n", issue.getId(), issue.getKey(), issue.getIndex(), issue.getOpeningVersion().getJiraName(), issue.getOpeningVersion().getIndex());
+		}
 		
-		System.out.println("considered releases");
+		/*System.out.println("considered releases");
 		for(i=0 ; i < considered.size(); i++) {
 			rel = releases.get(i);
 			System.out.printf("%d \t %s \t %s \t %s  \t\n", rel.getIndex(), rel.getReleaseID(), rel.getJiraName(), rel.getGitName());
@@ -107,7 +109,7 @@ public class Main {
 		System.out.println("SIZE UNRELEASED "+ releases.size());
 
 		size += releases.size();
-		System.out.println("\n\nTotal size "+size);
+		System.out.println("\n\nTotal size "+size);*/
 		
 	}
 }

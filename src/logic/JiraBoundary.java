@@ -18,7 +18,7 @@ public class JiraBoundary {
 			String url = "https://issues.apache.org/jira/rest/api/2/search?jql=project=%22"
 				+ projectName.toUpperCase() +"%22AND%22type%22=%22bug%22AND(%22status%22"+
 				"=%22closed%22OR%22status%22=%22resolved%22)AND%22resolution%22=%22fixed%22&"+
-				"fields=key,fixVersions,versions&startAt=" + startIndex.toString() +"&maxResults=1000"; 			
+				"fields=key,fixVersions,versions,created&startAt=" + startIndex.toString() +"&maxResults=1000"; 			
 			return JSONManager.readJsonObjectFromUrl(url);
 			
 	}

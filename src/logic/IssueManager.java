@@ -12,6 +12,7 @@ import org.json.JSONObject;
 
 public class IssueManager {
 	
+	private static final String ISSUE_FIELDS = "fields";
 	private static final Logger LOGGER = Logger.getLogger(IssueManager.class.getName());
 	private String projectName;
 	private List<Issue> issues;
@@ -102,6 +103,8 @@ public class IssueManager {
 		String id;
 		Release injectedVersion;
 		Release fixVersion;
+		Release openingVersion;
+		String openingDate;
 		List<Commit> commitList;
 		
 		int noFixedCount = 0;
@@ -121,23 +124,29 @@ public class IssueManager {
 				id = issuesJson.getJSONObject(i%1000).getString("id");
 				key = issuesJson.getJSONObject(i%1000).getString("key");
 				
-				injectedVersion = this.retrieveInjectedVersion(issuesJson.getJSONObject(i).getJSONObject("fields").getJSONArray("versions"));
-				fixVersion = this.retrieveFixedVersion(issuesJson.getJSONObject(i).getJSONObject("fields").getJSONArray("fixVersions"));
+				openingDate = issuesJson.getJSONObject(i%1000).getJSONObject(ISSUE_FIELDS).getString("created").split("T")[0];
+
+				
+				injectedVersion = this.retrieveInjectedVersion(issuesJson.getJSONObject(i).getJSONObject(ISSUE_FIELDS).getJSONArray("versions"));
+				fixVersion = this.retrieveFixedVersion(issuesJson.getJSONObject(i).getJSONObject(ISSUE_FIELDS).getJSONArray("fixVersions"));
+				openingVersion = this.rm.getReleaseFromDate(openingDate);
 				
 				totalCount ++;
-				
+
 				//filtering null fixVersions
-				if(fixVersion != null) {
+				if(fixVersion != null && openingVersion != null) {
 					noFixedCount ++;
 					issue = new Issue(id, key, fixVersion, injectedVersion);
+					issue.setOpeningVersion(openingVersion);
 					commitList = this.gb.getIssueCommit(issue.getIndex());
 					
 					
 					if(!(injectedVersion == null && commitList.isEmpty())) {
+						
 						//add also issues with no commits but with injected not null just to help proportion with more data
 						issue.setCommits(commitList);
 						this.issues.add(issue);
-						count ++;
+						count ++;					
 					}					
 				}
 
