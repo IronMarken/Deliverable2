@@ -15,7 +15,6 @@ public class Release {
 	private String jiraName;
 	private String gitName;
 	private String releaseID;
-	private String sha;
 	private List<String> javaClasses;
 	private List<Commit> commitList;
 	
@@ -86,17 +85,7 @@ public class Release {
 	
 	public String getReleaseID() {
 		return this.releaseID;
-	}
-	
-	public void setSha(String sha) {
-		this.sha = sha;
-	}
-	
-	public String getSha() {
-		return this.sha;
-	}
-	
-	
+	}	
 	
 	public void setClasses(List<String> classes) {
 		this.javaClasses = classes;

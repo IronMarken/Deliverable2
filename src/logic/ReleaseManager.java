@@ -1,6 +1,7 @@
 package logic;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -58,6 +59,7 @@ public class ReleaseManager {
 		this.unreleased = new ArrayList<>();
 		this.myReleases = new ArrayList<>();
 		Integer i;
+		LocalDateTime date;
 		
 		JSONArray versions = JiraBoundary.getReleases(this.projectName);
 		for (i = 0; i < versions.length(); i++) {
@@ -71,11 +73,20 @@ public class ReleaseManager {
 				id = versions.getJSONObject(i).getString("id");
 			
 			//add all realeases with a Date or released
-			if(versions.getJSONObject(i).has("releaseDate") || versions.getJSONObject(i).getBoolean("released") ) 
-				this.addRelease(name, id);				
-			//add to not released
-			else 
-				this.addUnreleased(name, id);
+			if(versions.getJSONObject(i).has("releaseDate") ) { 
+				date = LocalDate.parse(versions.getJSONObject(i).getString("releaseDate")).atStartOfDay();
+				this.addRelease(name, id, date);				
+			}
+			//check date on git or add to unreleased
+			else { 
+				date = this.gb.getReleaseDate(this.rna.deriveGitName(name));
+				if(date == null)
+					//date don't exists
+					this.addUnreleased(name, id);
+				else
+					//date taken from git
+					this.addRelease(name, id, date);
+			}
 		}
 		
 		// order releases 		
@@ -94,24 +105,14 @@ public class ReleaseManager {
 		this.myReleases = this.releases.subList(0, this.releases.size()/2);
 	}
 	
-	private void addRelease (String name, String id) throws IOException {
-
-		//getDate and SHA from Git
-		String sha;
-		LocalDateTime ldt;
+	private void addRelease (String name, String id, LocalDateTime date) {
 		
 		//derive gitName with Adapter
 		String gitName = this.rna.deriveGitName(name);
-		
-		ldt = this.gb.getReleaseDate(gitName);
-		sha = this.gb.getReleaseSha(gitName);
-		if(ldt != null && sha != null) {
-			Release r = new Release(name, id);
-			r.setGitName(gitName);
-			r.setReleaseDate(ldt);
-			r.setSha(sha);
-			this.releases.add(r);	
-		}
+		Release r = new Release(name, id);
+		r.setGitName(gitName);
+		r.setReleaseDate(date);
+		this.releases.add(r);	
 	}
 	
 	private void addUnreleased(String name, String id){
@@ -123,7 +124,6 @@ public class ReleaseManager {
 		Release r = new Release(name, id);
 		r.setGitName(gitName);
 		r.setReleaseDate(null);
-		r.setSha(null);
 		
 		this.unreleased.add(r);
 	}

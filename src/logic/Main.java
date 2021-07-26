@@ -11,8 +11,8 @@ public class Main {
 	
 	public static void main(String[] args) throws IOException, GitAPIException {
 		
-		//String gitUrl = "https://github.com/apache/avro";
-		String gitUrl = "https://github.com/apache/bookkeeper";
+		String gitUrl = "https://github.com/apache/avro";
+		//String gitUrl = "https://github.com/apache/bookkeeper";
 		
 		//Parse project name
 		String[] splitted = gitUrl.split("/");
@@ -38,7 +38,6 @@ public class Main {
 		List<Release> releases = rr.getReleases();
 		
 		IssueManager im = new IssueManager(projName, rr, gb);
-		System.out.println("Before");
 		im.retrieveIssues();
 		
 		List<Issue> issues = im.getIssues();
@@ -80,35 +79,35 @@ public class Main {
 			System.out.printf("%s \t %s \t %d\t\n", issue.getId(), issue.getKey(), issue.getIndex());
 		}*/
 		
-		/*System.out.println("considered releases");
+		System.out.println("considered releases");
 		for(i=0 ; i < considered.size(); i++) {
 			rel = releases.get(i);
-			System.out.printf("%d \t %s \t %s \t %s \t %s \t\n", rel.getIndex(), rel.getReleaseID(), rel.getJiraName(), rel.getGitName(), rel.getSha());
-		}*/
+			System.out.printf("%d \t %s \t %s \t %s  \t\n", rel.getIndex(), rel.getReleaseID(), rel.getJiraName(), rel.getGitName());
+		}
 		
-		/*System.out.println("SIZE RELEASED "+releases.size());
+		System.out.println("SIZE RELEASED "+releases.size());
 		System.out.println("RELEASED\n\n");
-		System.out.printf("Index \t VersionID \t Version Name \t Git Name \t SHA \t Data \t\n");
+		System.out.printf("Index \t VersionID \t Version Name \t Git Name \t Data \t\n");
 		for (i = 0; i< releases.size(); i++){
 			rel = releases.get(i);
-			System.out.printf("%d \t %s \t %s \t %s \t%s \t %s \t\n", rel.getIndex(), rel.getReleaseID(), rel.getJiraName(), rel.getGitName(), rel.getSha(), rel.getReleaseDate());
-		}*/
+			System.out.printf("%d \t %s \t %s \t %s \t%s  \t\n", rel.getIndex(), rel.getReleaseID(), rel.getJiraName(), rel.getGitName(), rel.getReleaseDate());
+		}
 		
 		
-		/*int size = releases.size();
+		int size = releases.size();
 		
 		System.out.println("\n\nUNRELEASED\n\n");
-		System.out.printf("Index \t VersionID \t Version Name \t Git Name \t SHA \t\n");
+		System.out.printf("Index \t VersionID \t Version Name \t Git Name \t\n");
 		releases = rr.getUnreleased();
 		for ( i = 0; i< releases.size(); i++){
 			rel = releases.get(i);
-			System.out.printf("%d \t %s \t %s \t\n", rel.getIndex(), rel.getReleaseID(), rel.getJiraName(), rel.getGitName(), rel.getSha());
+			System.out.printf("%d \t %s  %s \t %s \t\n", rel.getIndex(), rel.getReleaseID(), rel.getJiraName(), rel.getGitName());
 		}
 		
 		System.out.println("SIZE UNRELEASED "+ releases.size());
 
 		size += releases.size();
-		System.out.println("\n\nTotal size "+size);*/
+		System.out.println("\n\nTotal size "+size);
 		
 	}
 }

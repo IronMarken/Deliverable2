@@ -98,21 +98,6 @@ public class GitBoundary {
 		return dateTime;
 	}
 	
-	public String getReleaseSha(String gitName) throws IOException{
-		Process process = Runtime.getRuntime().exec(new String[] {"git", "log", gitName,"-1", "--pretty=format:%H" }, null, this.workingCopy);
-		BufferedReader reader = new BufferedReader (new InputStreamReader (process.getInputStream()));
-		String line;
-		String sha = null;
-		
-		while((line = reader.readLine()) != null) {
-			sha = line;
-				
-			//remove last \n
-			sha = sha.split("\n")[0];
-			
-		}	
-		return sha;
-	}
 	
 	public List<String> getReleaseClasses(String gitName) throws IOException{
 		List<String> classes = new ArrayList<>();
