@@ -92,7 +92,15 @@ public class IssueManager {
 		return injectedVersion;
 	}
 	
-	public void retrieveIssues() throws IOException{
+	public void setupIssues() throws IOException{
+		String report;
+		retrieveIssues();
+		getTouchedFiles();
+		report = "Issues size after java touched files "+this.issues.size();
+		LOGGER.log(Level.INFO, report);
+	}
+	
+	private void retrieveIssues() throws IOException{
 		
 		Integer i = 0;
 		Integer j = 0;
@@ -131,18 +139,17 @@ public class IssueManager {
 				fixVersion = this.retrieveFixedVersion(issuesJson.getJSONObject(i).getJSONObject(ISSUE_FIELDS).getJSONArray("fixVersions"));
 				openingVersion = this.rm.getReleaseFromDate(openingDate);
 				
-				totalCount ++;
-
+				totalCount ++;				
+				
 				//filtering null fixVersions
 				if(fixVersion != null && openingVersion != null) {
 					noFixedCount ++;
 					issue = new Issue(id, key, fixVersion, injectedVersion);
 					issue.setOpeningVersion(openingVersion);
-					commitList = this.gb.getIssueCommit(issue.getIndex());
-					
+					commitList = this.gb.getIssueCommit(issue);
+				
 					
 					if(!(injectedVersion == null && commitList.isEmpty())) {
-						
 						//add also issues with no commits but with injected not null just to help proportion with more data
 						issue.setCommits(commitList);
 						this.issues.add(issue);
@@ -177,14 +184,35 @@ public class IssueManager {
 		for(int i=0; i < issueList.size(); i++) {
 			issue = issueList.get(i);
 			injectedVersion = issue.getInjectedVersion();
-			fixVersion = issue.getInjectedVersion();	
+			fixVersion = issue.getFixVersion();	
 			
 			//filter injected > fix or injected > last Release considered
 			if(!(injectedVersion != null && (injectedVersion.getIndex() > fixVersion.getIndex() || injectedVersion.getIndex() > lastRelease.getIndex()))) 
-				filteredList.add(issue);				
-				
+				filteredList.add(issue);
+	
 		}
 		return filteredList;
-	}
+	} 
 	
+	private void getTouchedFiles() throws IOException {
+		List<Commit> commitList;
+		List<String> touchedFiles;
+		List<Issue> issueList = new ArrayList<>();
+		
+		for(Issue issue : this.issues) {
+			commitList = issue.getCommits();
+			for(Commit commit: commitList) {
+				touchedFiles = this.gb.getTouchedFile(commit.getSha());
+				//keep issues with no java touched files but with a injected version used for proportion
+				if(!(touchedFiles.isEmpty() && issue.getInjectedVersion() == null)) {
+					commit.setTouchedFiles(touchedFiles);
+					issueList.add(issue);
+				}
+			}
+			issue.calculateTouchedFiles();
+		}
+		
+		this.issues = issueList;
+		
+	}
 }

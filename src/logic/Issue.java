@@ -13,10 +13,12 @@ public class Issue {
 	private Release injectedVersion;
 	private Release openingVersion;
 	private List<Commit> commits;
+	private List<String> touchedFiles;
 	
 	
 	public Issue() {
 		this.commits = new ArrayList<>();
+		this.touchedFiles = new ArrayList<>();
 	}
 	
 	public Issue(String id, String key, Release fixVersion, Release injectedVersion) {
@@ -26,6 +28,20 @@ public class Issue {
 		this.injectedVersion = injectedVersion;
 		this.index = Integer.parseInt(this.key.split("-")[1]);
 		this.commits = new ArrayList<>();
+		this.touchedFiles = new ArrayList<>();
+	}
+	
+	public void calculateTouchedFiles() {
+		for(Commit commit : this.commits) {
+			for(String file : commit.getTouchedFiles()) {
+				if(!this.touchedFiles.contains(file))
+					this.touchedFiles.add(file);
+			}
+		}
+	}
+	
+	public List<String> getTouchedFiles(){
+		return this.touchedFiles;
 	}
 	
 	public Integer getIndex() {

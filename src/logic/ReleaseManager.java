@@ -66,13 +66,13 @@ public class ReleaseManager {
 			String name = "";
 			String id = ""; 
 			
-			//get params
+			//get parameters
 			if(versions.getJSONObject(i).has("name"))
 				name = versions.getJSONObject(i).getString("name");
 			if(versions.getJSONObject(i).has("id"))
 				id = versions.getJSONObject(i).getString("id");
 			
-			//add all realeases with a Date or released
+			//add all releases with a Date or released
 			if(versions.getJSONObject(i).has("releaseDate") ) { 
 				date = LocalDate.parse(versions.getJSONObject(i).getString("releaseDate")).atStartOfDay();
 				this.addRelease(name, id, date);				
@@ -101,7 +101,7 @@ public class ReleaseManager {
 			this.unreleased.get(j).setIndex(i+1);
 		}
 		
-		//add releases considered for the anlysis
+		//add releases considered for the analysis
 		this.myReleases = this.releases.subList(0, this.releases.size()/2);
 	}
 	

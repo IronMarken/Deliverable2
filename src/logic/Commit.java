@@ -2,6 +2,8 @@ package logic;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Commit {
 	
@@ -9,14 +11,18 @@ public class Commit {
 	private String sha;
 	private String author;
 	private String message;
+	private List<String> touchedFiles;
 	
-	public Commit() {}
+	public Commit() {
+		this.touchedFiles = new ArrayList<>();
+	}
 	
 	public Commit(String date, String sha, String author, String message) {
 		this.date = LocalDate.parse(date).atStartOfDay();
 		this.sha = sha;
 		this.author = author;
 		this.message = message;
+		this.touchedFiles = new ArrayList<>();
 	}
 	
 	public Commit(LocalDateTime date, String sha, String author, String message) {
@@ -24,6 +30,15 @@ public class Commit {
 		this.sha = sha;
 		this.author = author;
 		this.message = message;
+		this.touchedFiles = new ArrayList<>();
+	}
+	
+	public void setTouchedFiles(List<String> touchedFiles) {
+		this.touchedFiles = touchedFiles;
+	}
+	
+	public List<String> getTouchedFiles(){
+		return this.touchedFiles;
 	}
 	
 	public void setDate(String date) {

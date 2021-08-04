@@ -115,6 +115,7 @@ public class GitBoundary {
 			if(className.endsWith(".java")) 
 				classes.add(className);
 		}
+		Collections.sort(classes);
 		return classes;
 	}
 	
@@ -152,11 +153,11 @@ public class GitBoundary {
 	}
 	
 	
-	public List<Commit> getIssueCommit(Integer index) throws IOException{
+	public List<Commit> getIssueCommit(Issue issue) throws IOException{
 		
 		List<Commit> commits = new ArrayList<>();
 		
-		Process process = Runtime.getRuntime().exec(new String[] {"git", "log","--pretty=format:%H---%s---%an---%cd---", DATE_FORMAT}, null, this.workingCopy);
+		Process process = Runtime.getRuntime().exec(new String[] {"git", "log","--pretty=format:%H---%s---%an---%cd---","--no-merges",DATE_FORMAT}, null, this.workingCopy);
 		BufferedReader reader = new BufferedReader (new InputStreamReader (process.getInputStream()));
 		String line;
 		String[] splitted;
@@ -180,7 +181,7 @@ public class GitBoundary {
 				date = splitted[3].split(" ")[0];
 				
 				//regular expression for matching
-				pattern = Pattern.compile("(ISSUE|"+this.projectName.toUpperCase()+")(-| #)"+index+"(:|\\.)",Pattern.CASE_INSENSITIVE);
+				pattern = Pattern.compile("(ISSUE|"+this.projectName.toUpperCase()+")(-| #)"+issue.getIndex()+"(:|\\.)",Pattern.CASE_INSENSITIVE);
 				matcher = pattern.matcher(message);
 				
 				if(matcher.find()) {		
@@ -192,6 +193,23 @@ public class GitBoundary {
 		//order by date
 		Collections.sort(commits, (Commit c1, Commit c2) -> c1.getDate().compareTo(c2.getDate()));
 		return commits;
+		
+	}
+	
+	public List<String> getTouchedFile(String sha) throws IOException{
+		List<String> fileList = new ArrayList<>();
+		
+		Process process = Runtime.getRuntime().exec(new String[] {"git", "log",sha ,"--pretty=format:","--name-only","-1"}, null, this.workingCopy);
+		BufferedReader reader = new BufferedReader (new InputStreamReader (process.getInputStream()));
+		String line;
+		
+		while((line = reader.readLine()) != null) {
+			if(!line.isEmpty() && line.endsWith(".java")) {
+				fileList.add(line);
+			}
+		}
+		Collections.sort(fileList);
+		return fileList;
 		
 	}
 
