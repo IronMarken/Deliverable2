@@ -15,8 +15,8 @@ public class Main {
 	
 	public static void main(String[] args) throws IOException, GitAPIException {
 		
-		//String gitUrl = "https://github.com/apache/avro";
-		String gitUrl = "https://github.com/apache/bookkeeper";
+		String gitUrl = "https://github.com/apache/avro";
+		//String gitUrl = "https://github.com/apache/bookkeeper";
 		
 		//Parse project name
 		String[] splitted = gitUrl.split("/");
@@ -98,7 +98,7 @@ public class Main {
 		System.out.printf("Index \t VersionID \t Version Name \t Git Name \t Data \t\n");
 		for (i = 0; i< releases.size(); i++){
 			rel = releases.get(i);
-			System.out.printf("%d \t %s \t %s \t %s \t%s  \t\n", rel.getIndex(), rel.getReleaseID(), rel.getJiraName()), rel.getGitName(), rel.getReleaseDate());
+			System.out.printf("%d \t %s \t %s \t %s \t%s  \t\n", rel.getIndex(), rel.getReleaseID(), rel.getJiraName(), rel.getGitName(), rel.getReleaseDate());
 		}
 		
 		
@@ -109,7 +109,7 @@ public class Main {
 		releases = rr.getUnreleased();
 		for ( i = 0; i< releases.size(); i++){
 			rel = releases.get(i);
-			System.out.printf("%d \t %s  %s \t %s \t\n", rel.getIndex(), rel.getReleaseID(), rel.getJiraName(), rel.getGitName());
+			System.out.printf("%d \t %s \t %s \t\n", rel.getIndex(), rel.getReleaseID(), rel.getJiraName());
 		}
 		
 		System.out.println("SIZE UNRELEASED "+ releases.size());

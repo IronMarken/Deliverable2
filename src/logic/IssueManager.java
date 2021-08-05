@@ -195,6 +195,7 @@ public class IssueManager {
 	} 
 	
 	private void getTouchedFiles() throws IOException {
+		
 		List<Commit> commitList;
 		List<String> touchedFiles;
 		List<Issue> issueList = new ArrayList<>();
@@ -203,13 +204,14 @@ public class IssueManager {
 			commitList = issue.getCommits();
 			for(Commit commit: commitList) {
 				touchedFiles = this.gb.getTouchedFile(commit.getSha());
-				//keep issues with no java touched files but with a injected version used for proportion
-				if(!(touchedFiles.isEmpty() && issue.getInjectedVersion() == null)) {
-					commit.setTouchedFiles(touchedFiles);
-					issueList.add(issue);
-				}
+				commit.setTouchedFiles(touchedFiles);
 			}
+			//keep issues with no java touched files but with a injected version used for proportion
 			issue.calculateTouchedFiles();
+			if(!(issue.getTouchedFiles().isEmpty() && issue.getInjectedVersion() == null)) {
+				issueList.add(issue);
+			}
+			
 		}
 		
 		this.issues = issueList;
