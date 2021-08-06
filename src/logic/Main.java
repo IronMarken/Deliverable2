@@ -15,8 +15,8 @@ public class Main {
 	
 	public static void main(String[] args) throws IOException, GitAPIException {
 		
-		String gitUrl = "https://github.com/apache/avro";
-		//String gitUrl = "https://github.com/apache/bookkeeper";
+		//String gitUrl = "https://github.com/apache/avro";
+		String gitUrl = "https://github.com/apache/bookkeeper";
 		
 		//Parse project name
 		String[] splitted = gitUrl.split("/");
@@ -54,19 +54,20 @@ public class Main {
 		/*System.out.println("Issue commits");
 		for(i=0; i< issues.size(); i++) {
 			issue = issues.get(i);
-			System.out.println("Issue "+issue.getIndex());
-			issueCommits = issue.getCommits();
+			System.out.println("Issue "+issue.getIndex()+" key "+issue.getKey());
+			/*issueCommits = issue.getCommits();
 			touchedFiles = issue.getTouchedFiles();
 			for(j=0; j<touchedFiles.size(); j++) {
 				System.out.println(touchedFiles.get(j));
-			}
+			}*/
 			
 			
 			/*for(j=0; j< issueCommits.size(); j++) {
 				commit = issueCommits.get(j);
 				System.out.println("\tsha "+commit.getSha()+" date "+commit.getDate()+" author "+commit.getDate()+" message "+commit.getMessage());
 			}*/
-		/*}
+		//}
+		//System.out.println("Total "+i);
 		
 		
 		/*System.out.println("Commits");
@@ -115,6 +116,12 @@ public class Main {
 		System.out.println("SIZE UNRELEASED "+ releases.size());
 
 		size += releases.size();
-		System.out.println("\n\nTotal size "+size);*/
+		System.out.println("\n\nTotal size "+size);
+		
+		/*for(i=1; i<=200; i++) {
+			System.out.println((int)Math.ceil(i*0.01));
+		}*/
+		
+		System.out.println("END");
 	}
 }

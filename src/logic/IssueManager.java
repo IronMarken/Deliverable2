@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -14,6 +15,7 @@ public class IssueManager {
 	
 	private static final String ISSUE_FIELDS = "fields";
 	private static final Logger LOGGER = Logger.getLogger(IssueManager.class.getName());
+	private static final double PERC = 0.01;
 	private String projectName;
 	private List<Issue> issues;
 	private ReleaseManager rm;
@@ -96,8 +98,10 @@ public class IssueManager {
 		String report;
 		retrieveIssues();
 		getTouchedFiles();
-		report = "Issues size after java touched files "+this.issues.size();
+		report = "Issues size after java touched files "+this.issues.size()+"\nExecuting proportion";
 		LOGGER.log(Level.INFO, report);
+		proportion();
+
 	}
 	
 	private void retrieveIssues() throws IOException{
@@ -216,5 +220,99 @@ public class IssueManager {
 		
 		this.issues = issueList;
 		
+	}
+	
+	private void proportion() {
+		
+		Integer p;
+		Release iv;
+		Release ov;
+		Release fv;
+		Integer ivIndex;
+		
+		List<Release> releaseList;
+		List<Release> unreleasedList;
+		List<Issue> issueList = new ArrayList<>();
+		Issue issue;
+		
+		releaseList = this.rm.getReleases();
+		unreleasedList = this.rm.getUnreleased();
+		
+		for(int i=0; i < this.issues.size(); i++) {
+			issue = this.issues.get(i);
+			iv = issue.getInjectedVersion();
+			ov = issue.getOpeningVersion();
+			fv = issue.getFixVersion();
+			
+			if(iv == null) {
+				
+				p = movingWindow(issueList);
+				ivIndex = fv.getIndex() - (fv.getIndex()-ov.getIndex())*p;
+				
+				//proportion formula can return negative value if 
+				//ov is low and distance between ov and fv is big
+				if(ivIndex <= 0)
+					ivIndex = 1 ;  
+				
+				//check if in unreleased
+				if(ivIndex > releaseList.size()) 
+					iv = unreleasedList.get(0);
+				else	
+					//indexes starts from 1
+					iv = releaseList.get(ivIndex - 1);
+				issue.setInjectedVersion(iv);
+			}
+			issueList.add(issue);
+		}
+		
+		this.issues = issueList;
+	}
+	
+	private Integer movingWindow(List<Issue> list) {
+		Integer p = 0;
+		Issue issue;
+		Release fv;
+		Release ov;
+		Release iv;
+		double sum = 0;
+		
+		int count = 0;
+		
+		List<Issue> subList;
+		
+		
+		if(list.isEmpty()) {
+			//p for first issue if IV is null 
+			//average of all issues with IV not null	
+			subList = this.issues.stream().filter(i -> i.getInjectedVersion() != null).collect(Collectors.toList());
+		}else {
+			//calculated as moving window
+			int size;
+			size = (int)Math.ceil(PERC * list.size());
+			int fromIndex = list.size()-size;
+			//calculate p on last PERC (1%) issues
+			subList = list.subList(fromIndex, list.size());
+
+		}
+		
+		//calculate p and its average
+		for(int i = 0; i < subList.size(); i++) {
+			issue = subList.get(i);
+			fv = issue.getFixVersion();
+			ov = issue.getOpeningVersion();
+			iv = issue.getInjectedVersion();
+			
+			count ++;
+			//add 0 if fv = ov
+			if(fv.getIndex() != ov.getIndex()) 
+				sum = sum  + ((double)(fv.getIndex()-iv.getIndex())/(double)(fv.getIndex()-ov.getIndex())) ;
+				
+	
+		}
+		//control division by 0
+		if( count != 0)
+			p = (int)Math.round(sum/count);
+		
+		return p;
 	}
 }
