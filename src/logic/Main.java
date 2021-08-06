@@ -15,8 +15,8 @@ public class Main {
 	
 	public static void main(String[] args) throws IOException, GitAPIException {
 		
-		//String gitUrl = "https://github.com/apache/avro";
-		String gitUrl = "https://github.com/apache/bookkeeper";
+		String gitUrl = "https://github.com/apache/avro";
+		//String gitUrl = "https://github.com/apache/bookkeeper";
 		
 		//Parse project name
 		String[] splitted = gitUrl.split("/");

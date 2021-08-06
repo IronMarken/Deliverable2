@@ -99,9 +99,41 @@ public class IssueManager {
 		retrieveIssues();
 		getTouchedFiles();
 		report = "Issues size after java touched files "+this.issues.size()+"\nExecuting proportion";
-		LOGGER.log(Level.INFO, report);
+		LOGGER.log(Level.INFO, report);		
 		proportion();
+        LOGGER.log(Level.INFO, "Filter issues after proportion");
+        filterAfterProportion();
+        report = "After proportion final issues size "+this.issues.size();
+        LOGGER.log(Level.INFO, report);
+        
 
+    }
+    
+    private void filterAfterProportion() {
+    	
+    	List<Issue> filteredList;
+    	Release lastConsidered;
+    	Release injectedVersion;
+    	Release fixVersion;
+    	
+    	filteredList = new ArrayList<>();
+    	lastConsidered = this.rm.getLastReleaseConsidered();
+    	Issue issue;
+    	for(int i=0; i< this.issues.size(); i++) {
+    		issue = this.issues.get(i);
+    		injectedVersion = issue.getInjectedVersion();
+    		fixVersion = issue.getFixVersion();
+    		
+    		//reject issue if: 
+    		//injected > fix -> invalid issue
+    		//injected = fix -> no effects on buggy
+    		//injected > last considered release -> don't care
+    		//java touched file is empty -> no effects on buggy 
+    		if(!(injectedVersion.getIndex() >= fixVersion.getIndex() || injectedVersion.getIndex() > lastConsidered.getIndex() || issue.getTouchedFiles().isEmpty()))
+    			filteredList.add(issue);
+    	}
+    	
+    	this.issues = filteredList;
 	}
 	
 	private void retrieveIssues() throws IOException{
@@ -224,7 +256,7 @@ public class IssueManager {
 	
 	private void proportion() {
 		
-		Integer p;
+		double p;
 		Release iv;
 		Release ov;
 		Release fv;
@@ -247,7 +279,7 @@ public class IssueManager {
 			if(iv == null) {
 				
 				p = movingWindow(issueList);
-				ivIndex = fv.getIndex() - (fv.getIndex()-ov.getIndex())*p;
+				ivIndex = (int)Math.round(fv.getIndex() - (fv.getIndex()-ov.getIndex())*p);
 				
 				//proportion formula can return negative value if 
 				//ov is low and distance between ov and fv is big
@@ -268,8 +300,8 @@ public class IssueManager {
 		this.issues = issueList;
 	}
 	
-	private Integer movingWindow(List<Issue> list) {
-		Integer p = 0;
+	private double movingWindow(List<Issue> list) {
+		double p = 0;
 		Issue issue;
 		Release fv;
 		Release ov;
@@ -311,7 +343,7 @@ public class IssueManager {
 		}
 		//control division by 0
 		if( count != 0)
-			p = (int)Math.round(sum/count);
+			p = sum/count;
 		
 		return p;
 	}
