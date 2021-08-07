@@ -103,8 +103,10 @@ public class IssueManager {
 		proportion();
         LOGGER.log(Level.INFO, "Filter issues after proportion");
         filterAfterProportion();
-        report = "After proportion final issues size "+this.issues.size();
+        report = "After proportion final issues size "+this.issues.size()+"\nEvalueting buggy classes";
         LOGGER.log(Level.INFO, report);
+        setBuggyness();
+        LOGGER.log(Level.INFO, "Buggyness completed");
         
 
     }
@@ -242,8 +244,8 @@ public class IssueManager {
 				touchedFiles = this.gb.getTouchedFile(commit.getSha());
 				commit.setTouchedFiles(touchedFiles);
 			}
-			//keep issues with no java touched files but with a injected version used for proportion
 			issue.calculateTouchedFiles();
+			//keep issues with no java touched files but with a injected version used for proportion
 			if(!(issue.getTouchedFiles().isEmpty() && issue.getInjectedVersion() == null)) {
 				issueList.add(issue);
 			}
@@ -346,5 +348,37 @@ public class IssueManager {
 			p = sum/count;
 		
 		return p;
+	}
+	
+	private void setBuggyness() {
+		
+		List<Release> considered;
+		Release injectedVersion;
+		Release fixVersion;
+		Release lastRelease;
+		Release rel;
+		JavaFile fileTouched;
+		int i;
+		
+		considered = this.rm.getConsideredReleases();
+		lastRelease = this.rm.getLastReleaseConsidered();
+		
+		for(Issue issue:this.issues) {
+			injectedVersion = issue.getInjectedVersion();
+			fixVersion = issue.getFixVersion();
+			//fromInjected included to fixVersion excluded
+			//Warning to size of considered releases
+			for(i=injectedVersion.getIndex(); i < fixVersion.getIndex() && i <= lastRelease.getIndex(); i++) {
+				//release indexes start from 1
+				rel = considered.get(i-1);
+				//set buggy all files  touched by issues' commits
+				for(String fileName:issue.getTouchedFiles()) {
+					fileTouched = rel.getClassByName(fileName);
+					if(fileTouched != null)
+						fileTouched.setBuggy();
+				}
+			}	
+		}
+	
 	}
 }

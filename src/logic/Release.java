@@ -15,7 +15,7 @@ public class Release {
 	private String jiraName;
 	private String gitName;
 	private String releaseID;
-	private List<String> javaClasses;
+	private List<JavaFile> javaClasses;
 	private List<Commit> commitList;
 	
 	
@@ -87,12 +87,29 @@ public class Release {
 		return this.releaseID;
 	}	
 	
-	public void setClasses(List<String> classes) {
+	public void setJavaFiles(List<JavaFile> classes) {
 		this.javaClasses = classes;
 	}
 	
-	public List<String> getClasses(){
+
+	public void setClasses(List<String> classesNames) {
+		List<JavaFile> classes = new ArrayList<>();
+		JavaFile file;
+		for(String name: classesNames) {
+			file = new JavaFile(name);
+			classes.add(file);
+		}
+		this.javaClasses = classes;
+	}
+	
+	public List<JavaFile> getClasses(){
 		return this.javaClasses;
+	}
+	
+	public JavaFile getClassByName(String name) {
+		JavaFile file;
+		file = this.javaClasses.stream().filter(f -> name.contentEquals(f.getName())).findAny().orElse(null); 
+		return file;
 	}
 	
 	public void setCommits(List<Commit> commits) {

@@ -15,8 +15,8 @@ public class Main {
 	
 	public static void main(String[] args) throws IOException, GitAPIException {
 		
-		String gitUrl = "https://github.com/apache/avro";
-		//String gitUrl = "https://github.com/apache/bookkeeper";
+		//String gitUrl = "https://github.com/apache/avro";
+		String gitUrl = "https://github.com/apache/bookkeeper";
 		
 		//Parse project name
 		String[] splitted = gitUrl.split("/");
@@ -88,6 +88,12 @@ public class Main {
 			System.out.printf("%s \t %s \t %d \t %s\t %d \t\n", issue.getId(), issue.getKey(), issue.getIndex(), issue.getOpeningVersion().getJiraName(), issue.getOpeningVersion().getIndex());
 		}*/
 		
+		/*rel = considered.get(1);
+		System.out.println(rel.getGitName());
+		for(JavaFile file: rel.getClasses()) {
+			System.out.println(file.getName()+" "+file.isBuggy().toString());
+		}*/
+		
 		/*System.out.println("considered releases");
 		for(i=0 ; i < considered.size(); i++) {
 			rel = releases.get(i);
@@ -117,11 +123,8 @@ public class Main {
 
 		size += releases.size();
 		System.out.println("\n\nTotal size "+size);
+
 		
-		/*for(i=1; i<=200; i++) {
-			System.out.println((int)Math.ceil(i*0.01));
-		}*/
-		
-		System.out.println("END");
+		System.out.println("END");*/
 	}
 }
