@@ -98,6 +98,26 @@ public class GitBoundary {
 		return dateTime;
 	}
 	
+	public LocalDateTime getFileCreationDate(String file) throws IOException{
+		Process process = Runtime.getRuntime().exec(new String[] {"git", "log", "--diff-filter=A", "--pretty=format:%cd" ,DATE_FORMAT, "--",file }, null, this.workingCopy);
+		BufferedReader reader = new BufferedReader (new InputStreamReader (process.getInputStream()));
+		String line;
+		String date = null;
+		LocalDateTime dateTime = null;
+		while((line = reader.readLine()) != null) {
+			date = line;
+				
+			//get Date from full line
+			date = date.split(" ")[0];
+				
+			LocalDate ld = LocalDate.parse(date);
+			dateTime = ld.atStartOfDay();
+			
+		}		
+		
+		return dateTime;
+	}
+	
 	
 	public List<String> getReleaseClasses(String gitName) throws IOException{
 		List<String> classes = new ArrayList<>();
@@ -211,6 +231,20 @@ public class GitBoundary {
 		Collections.sort(fileList);
 		return fileList;
 		
+	}
+	
+	public Integer getFileSize(String releaseName, String fileName) throws IOException{
+		Process process = Runtime.getRuntime().exec(new String[] {"git","show",releaseName+":"+fileName}, null, this.workingCopy);
+	    BufferedReader reader = new BufferedReader (new InputStreamReader (process.getInputStream()));
+		String line;
+		Integer size = 0;
+		
+		while((line = reader.readLine()) != null) {
+			if(!line.isEmpty()) {
+				size ++;
+			}
+		}
+		return size;
 	}
 
 }

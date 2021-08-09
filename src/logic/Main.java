@@ -88,11 +88,20 @@ public class Main {
 			System.out.printf("%s \t %s \t %d \t %s\t %d \t\n", issue.getId(), issue.getKey(), issue.getIndex(), issue.getOpeningVersion().getJiraName(), issue.getOpeningVersion().getIndex());
 		}*/
 		
-		/*rel = considered.get(1);
+		/*rel = considered.get(0);
 		System.out.println(rel.getGitName());
 		for(JavaFile file: rel.getClasses()) {
-			System.out.println(file.getName()+" "+file.isBuggy().toString());
+			System.out.println(file.getName()+" "+file.isBuggy().toString()+" "+file.getSize().toString());
 		}*/
+		
+		/*for(Release release:considered) {
+			System.out.println(release.getGitName()+" "+release.getClasses().size());
+		}*/
+		
+		/*LocalDateTime date = gb.getFileCreationDate("lang/java/trevni/core/src/test/java/org/apache/trevni/TestUtil.java");
+		if(date == null)
+			System.out.println("is null");
+		else System.out.println(date.toString());*/
 		
 		/*System.out.println("considered releases");
 		for(i=0 ; i < considered.size(); i++) {

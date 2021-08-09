@@ -128,14 +128,25 @@ public class ReleaseManager {
 		this.unreleased.add(r);
 	}
 	
+	//get releases classes their size and age
 	private void retrieveClasses() throws IOException{
 		LOGGER.log(Level.INFO, "Getting classes");
 		Release rel;
+		JavaFile file;
 		List<String> classes;
+		List<JavaFile> fileList;
 		for (int i = 0; i < this.myReleases.size(); i++) {
+			fileList = new ArrayList<>();
 			rel = this.myReleases.get(i);
 			classes = this.gb.getReleaseClasses(rel.getGitName());
-			rel.setClasses(classes);
+			for(String name: classes) {
+				file = new JavaFile(name);
+				file.setSize(this.gb.getFileSize(rel.getGitName(), name));
+				file.setCreationDate(this.gb.getFileCreationDate(name));
+				file.execAge(rel.getReleaseDate());
+				fileList.add(file);
+			}
+			rel.setJavaFiles(fileList);
 		}		
 	}
 	
@@ -189,7 +200,7 @@ public class ReleaseManager {
 		
 		LocalDateTime ldt = LocalDate.parse(date).atStartOfDay();
 		
-		//return the first release with first date before date
+		//return the first release with first date after given date
 		for(int i=0; i<this.releases.size(); i++) {
 			actual = this.releases.get(i);
 			if(ldt.isBefore(actual.getReleaseDate())) {
