@@ -26,6 +26,7 @@ public class GitBoundary {
 	private File workingCopy;
 	private static final Logger LOGGER = Logger.getLogger(GitBoundary.class.getName());
 	private static final String DATE_FORMAT = "--date=iso";
+	private static final String DATE = "--pretty=format:%cd";
 	private String projectName;
 	
 	public GitBoundary(String gitUrl) throws GitAPIException, IOException {
@@ -77,29 +78,14 @@ public class GitBoundary {
 		}
 	}
 	
-	public LocalDateTime getReleaseDate(String gitName) throws IOException{
+	public LocalDateTime getDate(String name, boolean isRelease ) throws IOException{
 		
-		Process process = Runtime.getRuntime().exec(new String[] {"git", "log", gitName, "-1", "--pretty=format:%cd" ,DATE_FORMAT }, null, this.workingCopy);
-		BufferedReader reader = new BufferedReader (new InputStreamReader (process.getInputStream()));
-		String line;
-		String date = null;
-		LocalDateTime dateTime = null;
-		while((line = reader.readLine()) != null) {
-			date = line;
-				
-			//get Date from full line
-			date = date.split(" ")[0];
-				
-			LocalDate ld = LocalDate.parse(date);
-			dateTime = ld.atStartOfDay();
-			
-		}		
+		Process process;
 		
-		return dateTime;
-	}
-	
-	public LocalDateTime getFileCreationDate(String file) throws IOException{
-		Process process = Runtime.getRuntime().exec(new String[] {"git", "log", "--diff-filter=A", "--pretty=format:%cd" ,DATE_FORMAT, "--",file }, null, this.workingCopy);
+		if(isRelease)
+			process = Runtime.getRuntime().exec(new String[] {"git", "log", name, "-1", DATE ,DATE_FORMAT }, null, this.workingCopy);
+		else
+			process = Runtime.getRuntime().exec(new String[] {"git", "log", "--diff-filter=A", DATE ,DATE_FORMAT, "--",name }, null, this.workingCopy);
 		BufferedReader reader = new BufferedReader (new InputStreamReader (process.getInputStream()));
 		String line;
 		String date = null;
@@ -177,7 +163,7 @@ public class GitBoundary {
 		
 		List<Commit> commits = new ArrayList<>();
 		
-		Process process = Runtime.getRuntime().exec(new String[] {"git", "log","--pretty=format:%H---%s---%an---%cd---","--no-merges",DATE_FORMAT}, null, this.workingCopy);
+		Process process = Runtime.getRuntime().exec(new String[] {"git", "log","--pretty=format:%H---%s---%an---%cd---","--no-merges", "--all",DATE_FORMAT}, null, this.workingCopy);
 		BufferedReader reader = new BufferedReader (new InputStreamReader (process.getInputStream()));
 		String line;
 		String[] splitted;

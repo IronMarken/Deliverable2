@@ -79,7 +79,7 @@ public class ReleaseManager {
 			}
 			//check date on git or add to unreleased
 			else { 
-				date = this.gb.getReleaseDate(this.rna.deriveGitName(name));
+				date = this.gb.getDate(this.rna.deriveGitName(name), true);
 				if(date == null)
 					//date don't exists
 					this.addUnreleased(name, id);
@@ -142,7 +142,7 @@ public class ReleaseManager {
 			for(String name: classes) {
 				file = new JavaFile(name);
 				file.setSize(this.gb.getFileSize(rel.getGitName(), name));
-				file.setCreationDate(this.gb.getFileCreationDate(name));
+				file.setCreationDate(this.gb.getDate(name, false));
 				file.execAge(rel.getReleaseDate());
 				fileList.add(file);
 			}
