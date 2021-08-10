@@ -15,8 +15,8 @@ public class Main {
 	
 	public static void main(String[] args) throws IOException, GitAPIException {
 		
-		String gitUrl = "https://github.com/apache/avro";
-		//String gitUrl = "https://github.com/apache/bookkeeper";
+		//String gitUrl = "https://github.com/apache/avro";
+		String gitUrl = "https://github.com/apache/bookkeeper";
 		
 		//Parse project name
 		String[] splitted = gitUrl.split("/");
@@ -55,18 +55,18 @@ public class Main {
 		for(i=0; i< issues.size(); i++) {
 			issue = issues.get(i);
 			System.out.println("Issue "+issue.getIndex()+" key "+issue.getKey());
-			/*issueCommits = issue.getCommits();
+			issueCommits = issue.getCommits();
 			touchedFiles = issue.getTouchedFiles();
 			for(j=0; j<touchedFiles.size(); j++) {
 				System.out.println(touchedFiles.get(j));
-			}*/
+			}
 			
 			
-			/*for(j=0; j< issueCommits.size(); j++) {
+			for(j=0; j< issueCommits.size(); j++) {
 				commit = issueCommits.get(j);
 				System.out.println("\tsha "+commit.getSha()+" date "+commit.getDate()+" author "+commit.getDate()+" message "+commit.getMessage());
-			}*/
-		//}
+			}
+		}*/
 		//System.out.println("Total "+i);
 		
 		
@@ -74,13 +74,17 @@ public class Main {
 		for(i=0; i<considered.size(); i++){
 			rel = considered.get(i);
 			System.out.println(rel.getGitName());
-			System.out.println("Sha \t author \t date \t message");
+			//System.out.println("Sha \t author \t date \t message");
 			commits = rel.getCommits();
-			for(j=0; j< commits.size(); j++) {
+			if(commits.isEmpty())
+				System.out.println("rel "+rel.getGitName()+" senza commit");
+			else
+				System.out.println("rel "+rel.getGitName()+" "+commits.size());
+			/*for(j=0; j< commits.size(); j++) {
 				commit = commits.get(j);
 				System.out.printf("%s \t %s \t %s \t %s\n",commit.getSha(), commit.getAuthor(), commit.getDate(), commit.getMessage());
-			}
-		}*/
+			}*/
+		//}
 		
 		/*System.out.println("Issues");
 		for(i=0 ; i < issues.size(); i++) {
@@ -98,10 +102,6 @@ public class Main {
 			System.out.println(release.getGitName()+" "+release.getClasses().size());
 		}*/
 		
-		/*LocalDateTime date = gb.getFileCreationDate("lang/java/trevni/core/src/test/java/org/apache/trevni/TestUtil.java");
-		if(date == null)
-			System.out.println("is null");
-		else System.out.println(date.toString());*/
 		
 		/*System.out.println("considered releases");
 		for(i=0 ; i < considered.size(); i++) {

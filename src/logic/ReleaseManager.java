@@ -153,9 +153,18 @@ public class ReleaseManager {
 	private void retrieveCommit() throws IOException{
 		Release rel;
 		List<Commit> commits;
-		for(int i=0; i < this.myReleases.size(); i++) {
+		LocalDateTime after;
+		LocalDateTime before;
+		int i;
+		for(i=0; i < this.myReleases.size(); i++) {
+			
+			if(i == 0) {
+				after = null;
+			}else 
+				after = this.myReleases.get(i-1).getReleaseDate();
 			rel = this.myReleases.get(i);
-			commits = this.gb.getReleaseCommits(rel.getGitName());
+			before = rel.getReleaseDate();
+			commits = this.gb.getReleaseCommits(after, before);
 			rel.setCommits(commits);
 		}
 	}

@@ -27,6 +27,9 @@ public class GitBoundary {
 	private static final Logger LOGGER = Logger.getLogger(GitBoundary.class.getName());
 	private static final String DATE_FORMAT = "--date=iso";
 	private static final String DATE = "--pretty=format:%cd";
+	private static final String COMMIT_FORMAT = "--pretty=format:%H---%s---%an---%cd---";
+	private static final String ALL_OPT = "--all";
+	private static final String NO_MERGE_OPT = "--no-merges";
 	private String projectName;
 	
 	public GitBoundary(String gitUrl) throws GitAPIException, IOException {
@@ -125,11 +128,27 @@ public class GitBoundary {
 		return classes;
 	}
 	
-	public List<Commit> getReleaseCommits(String gitName) throws IOException{
-		
+	public List<Commit> getReleaseCommits(LocalDateTime afterDate, LocalDateTime beforeDate) throws IOException{
+
 		List<Commit> commits = new ArrayList<>();
+		//managing commits with same date of the release 
 		
-		Process process = Runtime.getRuntime().exec(new String[] {"git", "log", gitName ,"--pretty=format:%H---%s---%an---%cd---", DATE_FORMAT}, null, this.workingCopy);
+		LocalDateTime before = beforeDate.plusDays(1);
+		
+		String beforeString = "--before="+before.getYear()+"-"+before.getMonthValue()+"-"+before.getDayOfMonth();
+		System.out.println("before "+beforeString);
+		Process process;
+		//after = null for first release
+		if(afterDate != null) {
+			LocalDateTime after = afterDate.plusDays(1);
+			
+			String afterString = "--after="+after.getYear()+"-"+after.getMonthValue()+"-"+after.getDayOfMonth();
+			System.out.println("after "+afterString);
+			process = Runtime.getRuntime().exec(new String[] {"git", "log", ALL_OPT,NO_MERGE_OPT,beforeString, afterString ,COMMIT_FORMAT, DATE_FORMAT}, null, this.workingCopy); 
+		}else {
+			process = Runtime.getRuntime().exec(new String[] {"git", "log", ALL_OPT,NO_MERGE_OPT, beforeString, COMMIT_FORMAT, DATE_FORMAT}, null, this.workingCopy); 
+		}
+		
 		BufferedReader reader = new BufferedReader (new InputStreamReader (process.getInputStream()));
 		String line;
 		String[] splitted;
@@ -151,6 +170,7 @@ public class GitBoundary {
 				
 				commit = new Commit(date, sha, author, message);
 				commits.add(commit);
+			
 			}
 		}
 		//order by date
@@ -163,7 +183,7 @@ public class GitBoundary {
 		
 		List<Commit> commits = new ArrayList<>();
 		
-		Process process = Runtime.getRuntime().exec(new String[] {"git", "log","--pretty=format:%H---%s---%an---%cd---","--no-merges", "--all",DATE_FORMAT}, null, this.workingCopy);
+		Process process = Runtime.getRuntime().exec(new String[] {"git", "log",COMMIT_FORMAT,NO_MERGE_OPT, ALL_OPT,DATE_FORMAT}, null, this.workingCopy);
 		BufferedReader reader = new BufferedReader (new InputStreamReader (process.getInputStream()));
 		String line;
 		String[] splitted;
