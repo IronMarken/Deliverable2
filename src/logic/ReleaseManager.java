@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 
 public class ReleaseManager {
@@ -52,6 +53,43 @@ public class ReleaseManager {
 		LOGGER.log(Level.INFO, report);
 	}
 	
+	private void parseRelease(JSONObject obj) throws IOException {
+		String name = "";
+		String id = ""; 
+		LocalDateTime date;
+		
+		//get parameters
+		if(obj.has("name"))
+			name = obj.getString("name");
+		if(obj.has("id"))
+			id = obj.getString("id");
+		
+		//add all releases released
+		boolean isReleased = obj.getBoolean("released");
+		boolean isDated = obj.has("releaseDate");
+		
+		//Released with JiraDate
+		if(isReleased && isDated) {
+			date = LocalDate.parse(obj.getString("releaseDate")).atStartOfDay();
+			this.addRelease(name, id, date);
+		}
+		
+		//Released without JiraDate
+		if(isReleased && !isDated) {
+			date = this.gb.getDate(this.rna.deriveGitName(name), true);
+			if(date == null)
+				//date don't exists
+				this.addUnreleased(name, id);
+			else
+				//date taken from git
+				this.addRelease(name, id, date);
+		}
+		
+		//unreleased version
+		if(!isReleased)
+			this.addUnreleased(name, id);
+	}
+	
 	
 	private void retrieveReleases() throws IOException {
 		LOGGER.log(Level.INFO, "Getting releases");
@@ -59,34 +97,10 @@ public class ReleaseManager {
 		this.unreleased = new ArrayList<>();
 		this.myReleases = new ArrayList<>();
 		Integer i;
-		LocalDateTime date;
 		
 		JSONArray versions = JiraBoundary.getReleases(this.projectName);
 		for (i = 0; i < versions.length(); i++) {
-			String name = "";
-			String id = ""; 
-			
-			//get parameters
-			if(versions.getJSONObject(i).has("name"))
-				name = versions.getJSONObject(i).getString("name");
-			if(versions.getJSONObject(i).has("id"))
-				id = versions.getJSONObject(i).getString("id");
-			
-			//add all releases with a Date or released
-			if(versions.getJSONObject(i).has("releaseDate") ) { 
-				date = LocalDate.parse(versions.getJSONObject(i).getString("releaseDate")).atStartOfDay();
-				this.addRelease(name, id, date);				
-			}
-			//check date on git or add to unreleased
-			else { 
-				date = this.gb.getDate(this.rna.deriveGitName(name), true);
-				if(date == null)
-					//date don't exists
-					this.addUnreleased(name, id);
-				else
-					//date taken from git
-					this.addRelease(name, id, date);
-			}
+			parseRelease(versions.getJSONObject(i));
 		}
 		
 		// order releases 		

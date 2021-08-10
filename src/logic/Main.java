@@ -15,8 +15,8 @@ public class Main {
 	
 	public static void main(String[] args) throws IOException, GitAPIException {
 		
-		//String gitUrl = "https://github.com/apache/avro";
-		String gitUrl = "https://github.com/apache/bookkeeper";
+		String gitUrl = "https://github.com/apache/avro";
+		//String gitUrl = "https://github.com/apache/bookkeeper";
 		
 		//Parse project name
 		String[] splitted = gitUrl.split("/");
@@ -99,7 +99,7 @@ public class Main {
 		}*/
 		
 		/*for(Release release:considered) {
-			System.out.println(release.getGitName()+" "+release.getClasses().size());
+			System.out.println("\n"+release.getGitName()+" "+release.getCommits().size()+" rel date "+release.getReleaseDate().toString()+" first commit "+release.getCommits().get(0).getDate()+ " last commit "+release.getCommits().get(release.getCommits().size()-1).getDate().toString()+"\n");
 		}*/
 		
 		

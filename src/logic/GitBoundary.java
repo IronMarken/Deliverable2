@@ -136,14 +136,12 @@ public class GitBoundary {
 		LocalDateTime before = beforeDate.plusDays(1);
 		
 		String beforeString = "--before="+before.getYear()+"-"+before.getMonthValue()+"-"+before.getDayOfMonth();
-		System.out.println("before "+beforeString);
 		Process process;
 		//after = null for first release
 		if(afterDate != null) {
 			LocalDateTime after = afterDate.plusDays(1);
 			
 			String afterString = "--after="+after.getYear()+"-"+after.getMonthValue()+"-"+after.getDayOfMonth();
-			System.out.println("after "+afterString);
 			process = Runtime.getRuntime().exec(new String[] {"git", "log", ALL_OPT,NO_MERGE_OPT,beforeString, afterString ,COMMIT_FORMAT, DATE_FORMAT}, null, this.workingCopy); 
 		}else {
 			process = Runtime.getRuntime().exec(new String[] {"git", "log", ALL_OPT,NO_MERGE_OPT, beforeString, COMMIT_FORMAT, DATE_FORMAT}, null, this.workingCopy); 
