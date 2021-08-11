@@ -12,9 +12,11 @@ public class Commit {
 	private String author;
 	private String message;
 	private List<String> touchedFiles;
+	private List<DataFile> dataList;
 	
 	public Commit() {
 		this.touchedFiles = new ArrayList<>();
+		this.dataList = new ArrayList<>();
 	}
 	
 	public Commit(String date, String sha, String author, String message) {
@@ -31,6 +33,14 @@ public class Commit {
 		this.author = author;
 		this.message = message;
 		this.touchedFiles = new ArrayList<>();
+	}
+	
+	public void setDataFile(List<DataFile> dataList) {
+		this.dataList = dataList;
+	}
+	
+	public List<DataFile> getDataList(){
+		return this.dataList;
 	}
 	
 	public void setTouchedFiles(List<String> touchedFiles) {

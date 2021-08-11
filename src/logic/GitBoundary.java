@@ -30,6 +30,7 @@ public class GitBoundary {
 	private static final String COMMIT_FORMAT = "--pretty=format:%H---%s---%an---%cd---";
 	private static final String ALL_OPT = "--all";
 	private static final String NO_MERGE_OPT = "--no-merges";
+	private static final String FILE_EXT = ".java";
 	private String projectName;
 	
 	public GitBoundary(String gitUrl) throws GitAPIException, IOException {
@@ -121,7 +122,7 @@ public class GitBoundary {
 			
 			//remove last \n
 			className = className.split("\n")[0]; 
-			if(className.endsWith(".java")) 
+			if(className.endsWith(FILE_EXT)) 
 				classes.add(className);
 		}
 		Collections.sort(classes);
@@ -228,13 +229,40 @@ public class GitBoundary {
 		String line;
 		
 		while((line = reader.readLine()) != null) {
-			if(!line.isEmpty() && line.endsWith(".java")) {
+			if(!line.isEmpty() && line.endsWith(FILE_EXT)) {
 				fileList.add(line);
 			}
 		}
 		Collections.sort(fileList);
 		return fileList;
 		
+	}
+	
+	public List<DataFile> getTouchedFileWithData(String sha) throws IOException {
+		List<DataFile> fileList = new ArrayList<>();
+		Process process = Runtime.getRuntime().exec(new String[] {"git", "show", "--numstat" ,"--format=",sha,"-1"}, null, this.workingCopy);
+		BufferedReader reader = new BufferedReader (new InputStreamReader (process.getInputStream()));
+		
+		DataFile data;
+		String line;
+		String[] splitted;
+		Integer added;
+		Integer deleted;
+		String name;
+		
+		while((line = reader.readLine()) != null) {
+			if(!line.isEmpty() && line.endsWith(FILE_EXT)) {
+				splitted = line.split("\t");
+				added = Integer.parseInt(splitted[0]);
+				deleted = Integer.parseInt(splitted[1]);
+				name = splitted[2];
+				
+				data = new DataFile(name, added, deleted);
+				fileList.add(data);
+			}
+		}
+		Collections.sort(fileList, ( DataFile df1, DataFile df2 ) -> df1.getName().compareTo(df2.getName()));
+		return fileList;
 	}
 	
 	public Integer getFileSize(String releaseName, String fileName) throws IOException{

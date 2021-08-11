@@ -179,8 +179,26 @@ public class ReleaseManager {
 			rel = this.myReleases.get(i);
 			before = rel.getReleaseDate();
 			commits = this.gb.getReleaseCommits(after, before);
+			commits = setupCommit(commits);
 			rel.setCommits(commits);
 		}
+	}
+	
+	private List<Commit> setupCommit(List<Commit> commitList) throws IOException{
+		
+		List<Commit> setuppedList = new ArrayList<>();
+		List<DataFile> dataFiles;
+		
+		for(Commit commit: commitList) {
+			//get touched files
+			dataFiles = this.gb.getTouchedFileWithData(commit.getSha());
+			//filter 
+			if(!dataFiles.isEmpty()) {
+				commit.setDataFile(dataFiles);
+				setuppedList.add(commit);
+			}	
+		}
+		return setuppedList;
 	}
 	
 	

@@ -51,6 +51,8 @@ public class Main {
 		int i,j;
 		List<String> touchedFiles;
 		
+		//gb.getTouchedFileWithData("ba3ad6d7db72cb063c559babc1ef4ff8cb1c0c32");
+		
 		/*System.out.println("Issue commits");
 		for(i=0; i< issues.size(); i++) {
 			issue = issues.get(i);
@@ -131,9 +133,9 @@ public class Main {
 		System.out.println("SIZE UNRELEASED "+ releases.size());
 
 		size += releases.size();
-		System.out.println("\n\nTotal size "+size);
+		System.out.println("\n\nTotal size "+size);*/
 
 		
-		System.out.println("END");*/
+		System.out.println("END");
 	}
 }
