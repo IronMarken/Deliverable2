@@ -249,9 +249,13 @@ public class GitBoundary {
 		Integer added;
 		Integer deleted;
 		String name;
+		Integer chgSetSize;
+		
+		chgSetSize = 0;
 		
 		while((line = reader.readLine()) != null) {
 			if(!line.isEmpty() && line.endsWith(FILE_EXT)) {
+				chgSetSize ++;
 				splitted = line.split("\t");
 				added = Integer.parseInt(splitted[0]);
 				deleted = Integer.parseInt(splitted[1]);
@@ -260,6 +264,10 @@ public class GitBoundary {
 				data = new DataFile(name, added, deleted);
 				fileList.add(data);
 			}
+		}
+		for(DataFile df: fileList) {
+			//don't count file itself
+			df.setChgSetSize(chgSetSize-1);
 		}
 		Collections.sort(fileList, ( DataFile df1, DataFile df2 ) -> df1.getName().compareTo(df2.getName()));
 		return fileList;

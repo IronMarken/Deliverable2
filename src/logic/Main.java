@@ -15,8 +15,8 @@ public class Main {
 	
 	public static void main(String[] args) throws IOException, GitAPIException {
 		
-		String gitUrl = "https://github.com/apache/avro";
-		//String gitUrl = "https://github.com/apache/bookkeeper";
+		//String gitUrl = "https://github.com/apache/avro";
+		String gitUrl = "https://github.com/apache/bookkeeper";
 		
 		//Parse project name
 		String[] splitted = gitUrl.split("/");
@@ -51,7 +51,78 @@ public class Main {
 		int i,j;
 		List<String> touchedFiles;
 		
-		//gb.getTouchedFileWithData("ba3ad6d7db72cb063c559babc1ef4ff8cb1c0c32");
+		long touchedLOC;
+		int commitCount;
+		List<Integer> addedList;
+		List<Integer> churnList;
+		List<Integer> chgSetSize;
+		
+		System.out.println("Starting");
+		int total = 0;
+		int count = 0;
+		
+		for(Release release: considered) {
+			total = 0;
+			count = 0;
+			for(JavaFile file: release.getClasses()) {
+				total ++;
+				touchedLOC = file.getTouchedLOC();
+				/*if(touchedLOC == 0) {
+					System.out.println(release.getGitName()+" file "+file.getName()+" with no touched LOC");
+				}*/
+				
+				commitCount = file.getCommitCount();
+				/*if(commitCount == 0) {
+					System.out.println(release.getGitName()+" file "+file.getName()+" with no commit count");
+				}*/
+				
+				/*if(authorList.isEmpty()) {
+					System.out.println(release.getGitName()+" file "+file.getName()+" with no commit authors");
+				}*/
+				
+				addedList = file.getAddedList();
+				/*if(addedList.isEmpty()) {
+					System.out.println(release.getGitName()+" file "+file.getName()+" with no added list");
+				}*/
+				
+				churnList = file.getChurnList();
+				/*if(churnList.isEmpty()) {
+					System.out.println(release.getGitName()+" file "+file.getName()+" with no churn");
+				}*/
+				
+				chgSetSize = file.getChgSetSizeList();
+				/*if(chgSetSize.isEmpty()) {
+					System.out.println(release.getGitName()+" file "+file.getName()+" with no chgSetSize");
+				}*/
+				if(commitCount == 0 && touchedLOC == 0)
+					count ++;
+				if(commitCount != 0 && touchedLOC == 0) {
+					System.out.println("Problema "+release.getGitName()+" file "+file.getName());
+				}
+				
+			}
+			System.out.println(release.getGitName()+" count "+count+" Total "+total);
+		}
+		
+		/*JavaFile jf = new JavaFile("test");
+		jf.addAddedCount(2);
+		jf.addAddedCount(5);
+		jf.addAddedCount(5);
+		jf.addAddedCount(1);
+		
+		jf.addAuthor("ciao");
+		jf.addAuthor("mi");
+		jf.addAuthor("chiamo");
+		jf.addAuthor("ciao");
+		
+		System.out.println("sum "+jf.getTotalAddedLOC()+" max "+jf.getMaxAddedLOC()+" avg "+jf.getAvgAddedLOC());
+		System.out.println("author count "+jf.getAuthorCount());*/
+		
+		
+		/*List<DataFile> dfList = gb.getTouchedFileWithData("8dd55dbac12103c4e81be199a7d819e8e8fb5b56");
+		for(DataFile df : dfList) {
+			System.out.println("name "+df.getName()+" added "+df.getAdded()+" deleted "+df.getDeleted()+" chgSetSize "+df.getChgSetSize());
+		}*/
 		
 		/*System.out.println("Issue commits");
 		for(i=0; i< issues.size(); i++) {

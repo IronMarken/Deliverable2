@@ -51,6 +51,9 @@ public class ReleaseManager {
 		String report = "STEUP COMPLETED\nTotal releases "+this.releases.size()+
 				"\nTotal unreleased "+this.unreleased.size()+"\nTotal considered releases "+this.myReleases.size();
 		LOGGER.log(Level.INFO, report);
+		calculateData();
+		filterFirstRelease();
+		LOGGER.log(Level.INFO, "All data calculated");
 	}
 	
 	private void parseRelease(JSONObject obj) throws IOException {
@@ -201,6 +204,60 @@ public class ReleaseManager {
 		return setuppedList;
 	}
 	
+	
+	private void calculateData() {
+		LOGGER.log(Level.INFO, "Calculating file data");
+		JavaFile javaFile;
+		String fileName;
+		String author;
+		Integer added;
+		Integer changed;
+		Integer deleted;
+		Integer chgSetSize;
+		
+		
+		for(Release release: this.myReleases) {
+
+			for(Commit commit: release.getCommits()) {
+
+				author = commit.getAuthor();
+				for(DataFile dataFile: commit.getDataList()) {
+					
+					fileName = dataFile.getName();
+					added = dataFile.getAdded();
+					changed = dataFile.getChanged();
+					deleted = dataFile.getDeleted();
+					chgSetSize = dataFile.getChgSetSize();
+					
+					javaFile = release.getClassByName(fileName);
+					if(javaFile != null) {
+						//set needed parameters
+						javaFile.increaseCommitCount();
+						javaFile.increaseTouchedLOC((long)added + deleted + changed);
+						javaFile.addAuthor(author);
+						javaFile.addAddedCount(added);
+						javaFile.addChurnCount(added+deleted);
+						javaFile.addChgSetSize(chgSetSize);
+					}
+					
+				}
+			}
+		}
+		
+		LOGGER.log(Level.INFO, "Data calculated");
+	}
+	
+	private void filterFirstRelease() {
+		Release first = this.myReleases.get(0);
+		List<JavaFile> filteredList = new ArrayList<>();
+		
+		for(JavaFile file:first.getClasses()) {
+			if(file.getCommitCount()!=0)
+				filteredList.add(file);
+		}
+		
+		first.setJavaFiles(filteredList);
+	}
 	
 	public Release getReleaseByGitName(String gitName) {
 		Release rel;
