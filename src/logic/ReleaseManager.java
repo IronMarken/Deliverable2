@@ -158,6 +158,7 @@ public class ReleaseManager {
 			classes = this.gb.getReleaseClasses(rel.getGitName());
 			for(String name: classes) {
 				file = new JavaFile(name);
+				file.setReleaseIndex(rel.getIndex());
 				file.setSize(this.gb.getFileSize(rel.getGitName(), name));
 				file.setCreationDate(this.gb.getDate(name, false));
 				file.execAge(rel.getReleaseDate());
@@ -204,6 +205,21 @@ public class ReleaseManager {
 		return setuppedList;
 	}
 	
+	
+	public List<JavaFile> getFinalFileList(){
+		
+		List<JavaFile> finalList = new ArrayList<>();
+		List<JavaFile> relList;
+		
+		
+		for(Release rel:this.myReleases) {
+			relList = rel.getClasses();
+			Collections.sort(relList, ( JavaFile jf1, JavaFile jf2) -> jf1.getName().compareTo(jf2.getName()));
+			finalList.addAll(relList);
+		}
+		
+		return finalList;
+	}
 	
 	private void calculateData() {
 		LOGGER.log(Level.INFO, "Calculating file data");

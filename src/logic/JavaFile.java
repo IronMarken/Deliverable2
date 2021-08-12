@@ -11,6 +11,8 @@ import java.util.logging.Logger;
 public class JavaFile {
 	
 	private static final Logger LOGGER = Logger.getLogger(JavaFile.class.getName());
+	
+	private int releaseIndex;
 	private String name;
 	private Boolean buggy;
 	private Integer size;
@@ -42,7 +44,15 @@ public class JavaFile {
 		this.churnList = new ArrayList<>();
 		this.chgSetSizeList = new ArrayList<>();
 	}
-
+	
+	
+	public void setReleaseIndex(int releaseIndex) {
+		this.releaseIndex = releaseIndex;
+	}
+	
+	public int getReleaseIndex() {
+		return this.releaseIndex;
+	}
 	
 	public List<String> getAuthorList(){
 		return this.authorList;
