@@ -25,6 +25,7 @@ public class Main {
 		ReleaseNameAdapter rna;
 		ReleaseManager rm;
 		IssueManager im;
+		WekaManager wm;
 		
 		String report;
 		
@@ -56,7 +57,15 @@ public class Main {
 				report = "Skipping data retrieve of "+projName+". Csv file already exists";
 				LOGGER.log(Level.INFO, report);
 			}
-		
+			
+			//setup weka manager
+			wm = new WekaManager(fm.getFullName());
+			if(!wm.fileExists())
+				wm.csvToArff();
+			else {
+				report = "Already exists a arff file for "+projName;
+				LOGGER.log(Level.INFO, report);
+			}
 		}
 		
 		

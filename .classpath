@@ -7,5 +7,6 @@
 	<classpathentry kind="lib" path="jar/org.eclipse.jgit-5.11.0.202103091610-r.jar"/>
 	<classpathentry kind="lib" path="jar/slf4j-api-1.7.25.jar"/>
 	<classpathentry kind="lib" path="jar/slf4j-log4j12-1.7.25.jar"/>
+	<classpathentry kind="lib" path="jar/weka.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -37,6 +37,10 @@ public class FileManager {
 		
 	}
 	
+	public String getFullName() {
+		return this.fullName;
+	}
+	
 	public boolean fileExists() {
 		File checkFile = new File(fullName);
 		return checkFile.exists();
