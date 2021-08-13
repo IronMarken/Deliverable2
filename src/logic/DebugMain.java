@@ -13,9 +13,13 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 
+import weka.core.Instances;
+import weka.core.converters.CSVLoader;
+import weka.core.converters.ConverterUtils.DataSource;
+
 public class DebugMain {
 	
-	public static void main(String[] args) throws IOException, GitAPIException {
+	public static void main(String[] args) throws Exception, IOException, GitAPIException {
 		
 		//String gitUrl = "https://github.com/apache/avro";
 		/*String gitUrl = "https://github.com/apache/bookkeeper";
@@ -42,6 +46,11 @@ public class DebugMain {
 		
 		IssueManager im = new IssueManager(projName, rr, gb);
 		im.setupIssues();
+		
+		
+		fm.generateCsv(rr.getFinalFileList());
+		WekaManager wm = new WekaManager(fm.getFullName()); 
+		
 		
 		List<Issue> issues; 
 		
@@ -228,9 +237,16 @@ public class DebugMain {
 			if(lineC == 255 )
 				System.out.println(string);  
 		}   
-		sc.close();   
+		sc.close();   */
+		
+		DataSource source = new DataSource("output/bookkeeper.arff");
+		Instances data = source.getDataSet();
+		System.out.println(data);
+		//int numReleases = data.attribute(0).numValues();
+		int numReleases = data.numAttributes();
+		System.out.println("bookkeeper "+numReleases);
 		
 		
-		System.out.println("END");*/
+		System.out.println("END");
 	}
 }

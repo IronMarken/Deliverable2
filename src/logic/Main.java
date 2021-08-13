@@ -58,7 +58,7 @@ public class Main {
 				LOGGER.log(Level.INFO, report);
 			}
 			
-			//setup weka manager
+			//setup weka manager and generate arff
 			wm = new WekaManager(fm.getFullName());
 			if(!wm.fileExists())
 				wm.csvToArff();
