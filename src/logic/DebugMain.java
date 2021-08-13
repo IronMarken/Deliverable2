@@ -242,10 +242,18 @@ public class DebugMain {
 		DataSource source = new DataSource("output/bookkeeper.arff");
 		Instances data = source.getDataSet();
 		//System.out.println(data);
-		int numReleases = data.attribute(2).numValues();
+		int numReleases = data.attribute(0).numValues();
 		//int numReleases = data.numAttributes();
 		System.out.println("bookkeeper "+numReleases);
 		
+		WekaManager wm = new WekaManager("output/bookkeeper.csv");
+		
+		wm.walkForward();
+		
+		//List<Instances> splitted = wm.splitSets(data,2);
+		
+		//System.out.println("Training\n"+splitted.get(0));
+		//System.out.println("Testing\n"+splitted.get(1));
 		
 		System.out.println("END");
 	}
