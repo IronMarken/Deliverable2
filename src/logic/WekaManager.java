@@ -1,6 +1,7 @@
 package logic;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,7 +31,7 @@ public class WekaManager {
 	}
 	
 	
-	public void csvToArff() throws Exception {
+	public void csvToArff() throws IOException {
 		
 		LOGGER.log(Level.INFO, "Converting csv file into arff file");
 		
@@ -38,6 +39,7 @@ public class WekaManager {
 		CSVLoader loader = new CSVLoader();
 		loader.setSource(new File(this.csvName));
 		Instances data = loader.getDataSet();
+		Instances newData = null;
 		
 		//Modify release index from numeric to nominal
 		NumericToNominal convert = new NumericToNominal();
@@ -46,10 +48,14 @@ public class WekaManager {
 	    options[0]="-R";
 	    options[1]="1-2";  
 		
-	    convert.setOptions(options);
-	    convert.setInputFormat(data);
+	    try {
+	    	convert.setOptions(options);
+	    	convert.setInputFormat(data);
 	    
-	    Instances newData=Filter.useFilter(data, convert);
+	    	newData=Filter.useFilter(data, convert);
+	    }catch (Exception e) {
+	    	throw new IOException();
+	    }
 		
 
 		
