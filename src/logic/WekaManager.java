@@ -75,7 +75,7 @@ public class WekaManager {
 	
 	//return 0 trainingSet
 	//return 1 testingSet
-	public List<Instances> splitSets(Instances instances, int index) throws Exception{
+	public List<Instances> splitSets(Instances instances, int index) {
 		//from release 1 to index as training set
 		//release index+1 as testing set
 		List<Instances> splittedLists = new ArrayList<>();
