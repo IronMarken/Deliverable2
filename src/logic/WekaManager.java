@@ -1,13 +1,14 @@
 package logic;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import weka.core.Instances;
 import weka.core.converters.ArffSaver;
 import weka.core.converters.CSVLoader;
+import weka.filters.Filter;
+import weka.filters.unsupervised.attribute.NumericToNominal;
 
 
 public class WekaManager {
@@ -29,7 +30,7 @@ public class WekaManager {
 	}
 	
 	
-	public void csvToArff() throws IOException {
+	public void csvToArff() throws Exception {
 		
 		LOGGER.log(Level.INFO, "Converting csv file into arff file");
 		
@@ -37,11 +38,25 @@ public class WekaManager {
 		CSVLoader loader = new CSVLoader();
 		loader.setSource(new File(this.csvName));
 		Instances data = loader.getDataSet();
-	
+		
+		//Modify release index from numeric to nominal
+		NumericToNominal convert = new NumericToNominal();
+	    //set range
+		String[] options= new String[2];
+	    options[0]="-R";
+	    options[1]="1-2";  
+		
+	    convert.setOptions(options);
+	    convert.setInputFormat(data);
+	    
+	    Instances newData=Filter.useFilter(data, convert);
+		
+
+		
 		//create and save ARFF
 		ArffSaver saver = new ArffSaver();
 
-		saver.setInstances(data);
+		saver.setInstances(newData);
 		saver.setFile(new File(this.arffName));
 		
 		saver.writeBatch();
@@ -49,6 +64,8 @@ public class WekaManager {
 		LOGGER.log(Level.INFO, "Csv file converted into arff file");
 	
 	}
+	
+	
 	
 	
 

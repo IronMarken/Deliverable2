@@ -241,9 +241,9 @@ public class DebugMain {
 		
 		DataSource source = new DataSource("output/bookkeeper.arff");
 		Instances data = source.getDataSet();
-		System.out.println(data);
-		//int numReleases = data.attribute(0).numValues();
-		int numReleases = data.numAttributes();
+		//System.out.println(data);
+		int numReleases = data.attribute(2).numValues();
+		//int numReleases = data.numAttributes();
 		System.out.println("bookkeeper "+numReleases);
 		
 		

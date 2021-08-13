@@ -6,15 +6,12 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.eclipse.jgit.api.errors.GitAPIException;
-
-import java.io.IOException;
 
 public class Main {
 	
 	private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
 	
-	public static void main(String[] args) throws IOException, GitAPIException {
+	public static void main(String[] args) throws Exception {
 		
 		List<String> urlList = new ArrayList<>(Arrays.asList("https://github.com/apache/avro", "https://github.com/apache/bookkeeper"));
 		List<JavaFile> finalList; 
