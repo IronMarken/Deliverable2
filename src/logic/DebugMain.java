@@ -257,7 +257,6 @@ public class DebugMain {
 			System.out.println(filtered.attribute(i).name());
 		}
 		
-		
 		//wm.walkForward();
 		
 		//List<Instances> splitted = wm.splitSets(data,2);
