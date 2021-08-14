@@ -14,7 +14,7 @@ public class Main {
 	
 	private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
 	
-	public static void main(String[] args) throws IOException, GitAPIException {
+	public static void main(String[] args) throws WekaException, IOException, GitAPIException {
 		
 		List<String> urlList = new ArrayList<>(Arrays.asList("https://github.com/apache/avro", "https://github.com/apache/bookkeeper"));
 		List<JavaFile> finalList; 

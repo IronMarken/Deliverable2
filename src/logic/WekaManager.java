@@ -7,11 +7,14 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import weka.attributeSelection.BestFirst;
+import weka.attributeSelection.CfsSubsetEval;
 import weka.core.Instances;
 import weka.core.converters.ArffSaver;
 import weka.core.converters.CSVLoader;
 import weka.core.converters.ConverterUtils.DataSource;
 import weka.filters.Filter;
+import weka.filters.supervised.attribute.AttributeSelection;
 import weka.filters.unsupervised.attribute.NumericToNominal;
 
 
@@ -19,6 +22,7 @@ public class WekaManager {
 	
 	private static final Logger LOGGER = Logger.getLogger(WekaManager.class.getName()); 
 	private static final String EXT = ".arff";
+	private static final int STOP_BEST_FIRST = 4;
 	
 	private String arffName;
 	private String csvName;
@@ -34,7 +38,7 @@ public class WekaManager {
 	}
 	
 	
-	public void csvToArff() throws IOException {
+	public void csvToArff() throws WekaException, IOException {
 		
 		LOGGER.log(Level.INFO, "Converting csv file into arff file");
 		
@@ -57,7 +61,7 @@ public class WekaManager {
 	    
 	    	newData=Filter.useFilter(data, convert);
 	    }catch (Exception e) {
-	    	throw new IOException();
+	    	throw new WekaException(e);
 	    }
 	
 		
@@ -106,10 +110,35 @@ public class WekaManager {
 		
 	}
 	
+	public Instances featureSelection(Instances instances) throws WekaException {
+		Instances filteredInstances;
+		
+		//generate AttributeSelection evaluator and search algorithm
+		AttributeSelection filter = new AttributeSelection();
+		
+		CfsSubsetEval eval = new CfsSubsetEval();
+		
+		BestFirst search = new BestFirst();
+		try {
+			//Terminate bestFirst parameter
+			search.setSearchTermination(STOP_BEST_FIRST);
+		
+			filter.setEvaluator(eval);
+			filter.setSearch(search);
+			filter.setInputFormat(instances);
+		
+			filteredInstances = Filter.useFilter(instances, filter); 
+		}catch(Exception e) {
+			throw new WekaException(e);
+		}
+		
+		return filteredInstances;
+	}
 	
-	//TODO resolve smell for Exception when complete the method
-	//params filter and selections(?)
-	public void walkForward() throws Exception{
+	
+
+
+	public void walkForward() throws WekaException{
 		
 		List<Instances> setsList;
 		Instances trainingSet;
@@ -118,18 +147,24 @@ public class WekaManager {
 		int numReleases;
 		int i;
 		
-		DataSource source = new DataSource(this.arffName);
-		Instances data = source.getDataSet();
-		
-		numReleases = data.attribute(0).numValues();
-		
-		//skipping first step with null training set
-		for(i=1; i<numReleases; i++ ) {
-			setsList = this.splitSets(data, i);
-			trainingSet = setsList.get(0);
-			testingSet = setsList.get(1);
+		try {
+			DataSource source = new DataSource(this.arffName);
+			Instances data = source.getDataSet();
+			numReleases = data.attribute(0).numValues();
 			
+			//skipping first step with null training set
+			for(i=1; i<numReleases; i++ ) {
+				setsList = this.splitSets(data, i);
+				trainingSet = setsList.get(0);
+				testingSet = setsList.get(1);
+				
+			}
+		}catch(Exception e) {
+			throw new WekaException(e);
 		}
+		
+		
+
 		
 	}
 	

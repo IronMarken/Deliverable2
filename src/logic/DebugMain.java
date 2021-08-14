@@ -246,9 +246,19 @@ public class DebugMain {
 		//int numReleases = data.numAttributes();
 		System.out.println("bookkeeper "+numReleases);
 		
-		WekaManager wm = new WekaManager("output/bookkeeper.csv");
+		WekaManager wm = new WekaManager("output/avro.csv");
 		
-		wm.walkForward();
+		Instances filtered = wm.featureSelection(data);
+		
+		System.out.println("No filter attr: "+ data.numAttributes());
+		System.out.println("Filtered attr: "+ filtered.numAttributes());
+		
+		for(int i=0; i<filtered.numAttributes(); i++) {
+			System.out.println(filtered.attribute(i).name());
+		}
+		
+		
+		//wm.walkForward();
 		
 		//List<Instances> splitted = wm.splitSets(data,2);
 		
