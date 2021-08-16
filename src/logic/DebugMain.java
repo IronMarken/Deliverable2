@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 
+import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.CSVLoader;
 import weka.core.converters.ConverterUtils.DataSource;
@@ -248,14 +249,23 @@ public class DebugMain {
 		
 		WekaManager wm = new WekaManager("output/avro.csv");
 		
-		Instances filtered = wm.featureSelection(data);
+		/*Instances filtered = wm.featureSelection(data);
 		
 		System.out.println("No filter attr: "+ data.numAttributes());
 		System.out.println("Filtered attr: "+ filtered.numAttributes());
 		
-		for(int i=0; i<filtered.numAttributes(); i++) {
+		/*for(int i=0; i<filtered.numAttributes(); i++) {
 			System.out.println(filtered.attribute(i).name());
-		}
+		}*/
+		
+		Instance instance = data.get(4);
+		//for(Instance instance: data) {
+			//System.out.println("value "+instance.value(data.numAttributes()-1));
+		//}
+		
+		//System.out.println("SampleSizePerc "+wm.getSampleSizePercent(data));
+		
+		//System.out.println("count "+wm.countBuggyInstances(data));
 		
 		//wm.walkForward();
 		

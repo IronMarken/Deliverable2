@@ -9,12 +9,16 @@ import java.util.logging.Logger;
 
 import weka.attributeSelection.BestFirst;
 import weka.attributeSelection.CfsSubsetEval;
+import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ArffSaver;
 import weka.core.converters.CSVLoader;
 import weka.core.converters.ConverterUtils.DataSource;
 import weka.filters.Filter;
 import weka.filters.supervised.attribute.AttributeSelection;
+import weka.filters.supervised.instance.Resample;
+import weka.filters.supervised.instance.SMOTE;
+import weka.filters.supervised.instance.SpreadSubsample;
 import weka.filters.unsupervised.attribute.NumericToNominal;
 
 
@@ -23,6 +27,7 @@ public class WekaManager {
 	private static final Logger LOGGER = Logger.getLogger(WekaManager.class.getName()); 
 	private static final String EXT = ".arff";
 	private static final int STOP_BEST_FIRST = 4;
+	private static final int COST_CFP = 1;
 	
 	private String arffName;
 	private String csvName;
@@ -134,6 +139,92 @@ public class WekaManager {
 		
 		return filteredInstances;
 	}
+	
+
+	private double getSampleSizePercent(Instances instances) {
+
+		int buggy;
+		int size;
+		int notBuggy;
+		double majority;
+		double minority;
+		
+		size = instances.size();
+		buggy = countBuggyInstances(instances);
+		notBuggy = size - buggy;
+		
+		if(buggy > notBuggy) {
+			majority = buggy;
+			minority = notBuggy;
+		}else {
+			minority = buggy;
+			majority = notBuggy;
+		}
+		
+		//check 0 on minority
+		if(minority == 0) {
+			return 0;
+		}
+		else
+			return 100*(majority-minority)/minority;
+		
+	}
+	
+	
+	private int countBuggyInstances(Instances data) {
+		int counter;
+		counter = 0;
+		for(Instance instance: data){
+			//get last attribute (Buggy)
+			//from arff yes=1 no=0
+		    counter += (int)instance.value(data.numAttributes()-1) == 1 ? 1 : 0;
+		}
+		
+		return counter;
+	}
+	
+	public Filter undersamplingFilter(Instances instances) throws WekaException {
+		SpreadSubsample spreadSubsample = new SpreadSubsample();
+		String[] opts = new String[]{ "-M", "1.0"};
+		try {
+			spreadSubsample.setOptions(opts);
+			spreadSubsample.setInputFormat(instances);
+		}catch(Exception e ) {
+			throw new WekaException(e);
+		}
+		return spreadSubsample;
+		
+	}
+	
+	public Filter oversamplingFilter(Instances instances) throws WekaException {
+		Resample resample = new Resample();
+		resample.setNoReplacement(false);
+		resample.setBiasToUniformClass(1.0);
+		//obtain majority = minority
+		resample.setSampleSizePercent(getSampleSizePercent(instances));
+		try {
+			resample.setInputFormat(instances);
+		}catch(Exception e) {
+			throw new WekaException(e);
+		}
+		return resample;
+		
+	}
+	
+	public Filter smoteFilter(Instances instances) throws WekaException {
+		SMOTE smote = new SMOTE();
+		//how many minority instances needed to obtain minority=majority
+		smote.setPercentage(getSampleSizePercent(instances));
+		try {
+			smote.setInputFormat(instances);
+		}catch(Exception e) {
+			throw new WekaException(e);
+		}
+		
+		return smote;
+	}
+	
+	
 	
 	
 
