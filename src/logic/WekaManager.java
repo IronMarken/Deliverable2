@@ -9,6 +9,9 @@ import java.util.logging.Logger;
 
 import weka.attributeSelection.BestFirst;
 import weka.attributeSelection.CfsSubsetEval;
+import weka.classifiers.Classifier;
+import weka.classifiers.CostMatrix;
+import weka.classifiers.meta.CostSensitiveClassifier;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ArffSaver;
@@ -27,7 +30,7 @@ public class WekaManager {
 	private static final Logger LOGGER = Logger.getLogger(WekaManager.class.getName()); 
 	private static final String EXT = ".arff";
 	private static final int STOP_BEST_FIRST = 4;
-	private static final int COST_CFP = 1;
+	private static final double CFP = 1.0;
 	
 	private String arffName;
 	private String csvName;
@@ -225,8 +228,31 @@ public class WekaManager {
 	}
 	
 	
+	private CostMatrix createCostMatrix(double costFalsePositive, double costFalseNegative) {
+		CostMatrix costMatrix = new CostMatrix(2);
+		costMatrix.setCell(0, 0, 0.0);
+		costMatrix.setCell(1, 0, costFalsePositive);
+		costMatrix.setCell(0, 1, costFalseNegative);
+		costMatrix.setCell(1, 1, 0.0);
+		
+		return costMatrix;		
+	}
 	
-	
+	public CostSensitiveClassifier sensitiveClassifier(Classifier classifier, Instances trainingSet, boolean threshold)throws WekaException {
+		
+		CostSensitiveClassifier costClassifier = new CostSensitiveClassifier();
+		costClassifier.setClassifier(classifier);
+		costClassifier.setCostMatrix(createCostMatrix(CFP, 10*CFP));
+		//adjust threshold
+		costClassifier.setMinimizeExpectedCost(threshold);
+		try {
+			costClassifier.buildClassifier(trainingSet);	
+		}catch(Exception e) {
+			throw new WekaException(e);
+		}
+		
+		return costClassifier;
+	}
 
 
 	public void walkForward() throws WekaException{
@@ -249,6 +275,9 @@ public class WekaManager {
 				trainingSet = setsList.get(0);
 				testingSet = setsList.get(1);
 				
+				//set prediction attribute
+				trainingSet.setClassIndex(trainingSet.numAttributes()-1);
+				testingSet.setClassIndex(testingSet.numAttributes()-1);
 			}
 		}catch(Exception e) {
 			throw new WekaException(e);
