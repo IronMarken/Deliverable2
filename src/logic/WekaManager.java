@@ -391,6 +391,13 @@ public class WekaManager {
 		Classifier classif;
 		CostSensitiveClassifier costSensitiveClass;
 		String report;
+		List<String> cols = new ArrayList<>();
+		cols.addAll(firstCol);
+		
+		int i;
+		int j;
+		int k;
+		int l;
 		
 		int count = 0;
 		
@@ -398,36 +405,48 @@ public class WekaManager {
 		List<WekaData> stepData = new ArrayList<>();
 		
 		//feature selection
-		for(String featureSelection:featureSelectionList) {
-			firstCol.add(featureSelection);
+		for(i=0; i < featureSelectionList.size();i++) {
+			String featureSelection = featureSelectionList.get(i);
+			cols.add(featureSelection);
 			filteredData = applyFeatureSelection(featureSelection, trainingSet, testingSet);
 			filteredTraining = filteredData.get(0);
 			filteredTesting = filteredData.get(1);
 			
 			//sampling
-			for(String balancing: samplingList) {
-				firstCol.add(balancing);
+			for(j=0; j < samplingList.size(); j++) {
+				String balancing = samplingList.get(j);
+				cols.add(balancing);
 				sampledTraining = applySampling(balancing, filteredTraining);
 				
 				//classifiers
-				for(String classifier:classifierList) {
-					firstCol.add(classifier);
+				for(k=0; k < classifierList.size(); k++) {
+					String classifier =  classifierList.get(k);
+					cols.add(classifier);
 					classif = getClassifier(classifier,sampledTraining);
 					
 					//costSensitive
-					for(String sensitivity:costList) {
+					for(l=0; l<costList.size(); l++) {
+						String sensitivity = costList.get(l);
 						count ++;
-						firstCol.add(sensitivity);
+						cols.add(sensitivity);
 						costSensitiveClass = applyCostSensitive(sensitivity, classif, sampledTraining);
 						sampledTraining.setClassIndex(sampledTraining.numAttributes()-1);
 						filteredTesting.setClassIndex(filteredTesting.numAttributes()-1);
-						wekaData = evaluateClass(firstCol, sampledTraining, filteredTesting, classif, costSensitiveClass);
+						wekaData = evaluateClass(cols, sampledTraining, filteredTesting, classif, costSensitiveClass);
 						stepData.add(wekaData);
+						//remove last and keep other values
+						cols.remove(cols.size()-1);
 					}
+					//remove last and keep other values
+					cols.remove(cols.size()-1);
 				}
+				//remove last and keep other values
+				cols.remove(cols.size()-1);
 			}
+			//remove last and keep other values
+			cols.remove(cols.size()-1);
 		}
-		report = count+" combination tried";
+		report = count+" combinations tried";
 		LOGGER.log(Level.INFO, report);
 		return stepData;
 	}
@@ -481,7 +500,7 @@ public class WekaManager {
 		
 		//set training and testing data
         trainingData = (double) trainingSet.size()/ (trainingSet.size()+testingSet.size());
-        defectiveTraining = countBuggyInstances(trainingSet)/trainingData;
+        defectiveTraining = countBuggyInstances(trainingSet)/(double)trainingSet.size();
         defectiveTesting = countBuggyInstances(testingSet)/(double)testingSet.size();
 		
         data.setTrainingData(trainingData);
@@ -513,8 +532,7 @@ public class WekaManager {
 		String report;
 		
 		String dataset;
-		Integer trainingRelease;
-		List<String> col = new ArrayList<>();
+		List<String> col;
 		//total data divided for step
 		List<List<WekaData>> totalData = new ArrayList<>();
 		List<WekaData> stepData;
@@ -540,11 +558,11 @@ public class WekaManager {
 
 				
 				//set dataset name and #trainingRelease
-				dataset = this.projectName+"-step_"+i;
-				trainingRelease = i;				
+				dataset = this.projectName+"-step_"+i.toString();				
 				
+				col = new ArrayList<>();
 				col.add(dataset);
-				col.add(trainingRelease.toString());
+				col.add(i.toString());
 				
 				report = "Step "+i;
 				LOGGER.log(Level.INFO, report);

@@ -1,5 +1,10 @@
 package logic;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 public class WekaData {
 	
 	private String dataset;
@@ -22,6 +27,52 @@ public class WekaData {
 	private Double recall;
 	private Double auc;
 	private Double kappa;
+	
+	public static List<WekaData> getBestData(List<WekaData> data){
+		List<WekaData> bestData = new ArrayList<>();
+		
+		bestData.add(WekaData.getBestPrecision(data));
+		bestData.add(WekaData.getBestRecall(data));
+		bestData.add(WekaData.getBestAUC(data));
+		bestData.add(WekaData.getBestKappa(data));
+		
+		return bestData;
+	}
+	
+	public static WekaData getBestKappa(List<WekaData>data) {
+		WekaData bestKappa = null;
+		
+		if(!data.isEmpty())
+			bestKappa = Collections.max(data, Comparator.comparing(WekaData::getKappa));
+		return bestKappa;
+	}
+	
+	
+	public static WekaData getBestAUC(List<WekaData>data) {
+		WekaData bestAUC = null;
+		
+		if(!data.isEmpty())
+			bestAUC = Collections.max(data, Comparator.comparing(WekaData::getAUC));
+		return bestAUC;
+	}
+	
+	public static WekaData getBestRecall(List<WekaData> data) {
+		WekaData bestRecall = null;
+		
+		if(!data.isEmpty())
+			bestRecall = Collections.max(data, Comparator.comparing(WekaData::getRecall));
+		return bestRecall;
+	}
+	
+	public static WekaData getBestPrecision(List<WekaData> data) {
+		WekaData bestPrecision = null;
+		
+		if(!data.isEmpty())
+			bestPrecision = Collections.max(data, Comparator.comparing(WekaData::getPrecision));
+		return bestPrecision;
+	}
+	
+	
 	
 	public void setDataset(String dataset) {
 		this.dataset = dataset;

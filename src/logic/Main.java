@@ -67,34 +67,45 @@ public class Main {
 				LOGGER.log(Level.INFO, report);
 			}
 			
-			//setClassifiers
-			List<String> classifierList = new ArrayList<>();
-			classifierList.add("RandomForest");
-			classifierList.add("NaiveBayes");
-			classifierList.add("IBk");
 			
-			//setFeatureSelection
-			List<String> featureSelectionList = new ArrayList<>();
-			featureSelectionList.add("no_feature_selection");
-			featureSelectionList.add("BestFirst");
+			if(fm.fullDataExists() && fm.stepExists() && fm.bestExists()) {
+				report = "For "+projName+" already exists all data file...Skipping evaluation";
+				LOGGER.log(Level.INFO, report);
+			}else {
+				//needed at least a file
+				
+				//setClassifiers
+				List<String> classifierList = new ArrayList<>();
+				classifierList.add("RandomForest");
+				classifierList.add("NaiveBayes");
+				classifierList.add("IBk");
 			
-			//setSampling
-			List<String> samplingList = new ArrayList<>();
-			samplingList.add("no_sampling");
-			samplingList.add("Oversampling");
-			samplingList.add("Undersampling");
-			samplingList.add("SMOTE");
+				//setFeatureSelection
+				List<String> featureSelectionList = new ArrayList<>();
+				featureSelectionList.add("no_feature_selection");
+				featureSelectionList.add("BestFirst");
 			
-			//setCostSensitive
-			List<String> costList = new ArrayList<>();
-			costList.add("no_cost");
-			costList.add("Sensitive_Threshold");
-			costList.add("Sensitive_Learning");
+				//setSampling
+				List<String> samplingList = new ArrayList<>();
+				samplingList.add("no_sampling");
+				samplingList.add("Oversampling");
+				samplingList.add("Undersampling");
+				samplingList.add("SMOTE");
 			
-			wm.walkForward(classifierList, featureSelectionList, samplingList, costList);
+				//setCostSensitive
+				List<String> costList = new ArrayList<>();
+				costList.add("no_cost");
+				costList.add("Sensitive_Threshold");
+				costList.add("Sensitive_Learning");
+				
+				LOGGER.log(Level.INFO, "Starting evaluation");
+				List<List<WekaData>>allData = wm.walkForward(classifierList, featureSelectionList, samplingList, costList);
+				fm.generateFinalCsv(allData);
+				
+				report = projName+" completed";
+				LOGGER.log(Level.INFO, report);				
+			}
 		}
-		
-		
 	}
 
 }
