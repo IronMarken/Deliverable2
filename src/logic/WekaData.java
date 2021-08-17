@@ -14,16 +14,14 @@ public class WekaData {
 	private String featureSelection;
 	private String balancing;
 	private String sensitivity;
-	private Long truePositive;
-	private Long falsePositive;
-	private Long trueNegative;
-	private Long falseNegative;
+	private Double truePositive;
+	private Double falsePositive;
+	private Double trueNegative;
+	private Double falseNegative;
 	private Double precision;
 	private Double recall;
 	private Double auc;
 	private Double kappa;
-	
-	
 	
 	public void setDataset(String dataset) {
 		this.dataset = dataset;
@@ -100,35 +98,35 @@ public class WekaData {
 		this.sensitivity = sensitivity;
 	}
 
-	public Long getTruePositive() {
+	public Double getTruePositive() {
 		return truePositive;
 	}
 
-	public void setTruePositive(Long truePositive) {
+	public void setTruePositive(Double truePositive) {
 		this.truePositive = truePositive;
 	}
 
-	public Long getFalsePositive() {
+	public Double getFalsePositive() {
 		return falsePositive;
 	}
 
-	public void setFalsePositive(Long falsePositive) {
+	public void setFalsePositive(Double falsePositive) {
 		this.falsePositive = falsePositive;
 	}
 
-	public Long getTrueNegative() {
+	public Double getTrueNegative() {
 		return trueNegative;
 	}
 
-	public void setTrueNegative(Long trueNegative) {
+	public void setTrueNegative(Double trueNegative) {
 		this.trueNegative = trueNegative;
 	}
 
-	public void setFalseNegative(long falseNegative) {
+	public void setFalseNegative(Double falseNegative) {
 		this.falseNegative = falseNegative;
 	}
 	
-	public Long getFalseNegative() {
+	public Double getFalseNegative() {
 		return this.falseNegative;
 	}
 	

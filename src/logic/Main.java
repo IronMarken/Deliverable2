@@ -59,13 +59,39 @@ public class Main {
 			}
 			
 			//setup weka manager and generate arff
-			wm = new WekaManager(fm.getFullName());
+			wm = new WekaManager(fm.getFullName(), projName);
 			if(!wm.fileExists())
 				wm.csvToArff();
 			else {
 				report = "Already exists a arff file for "+projName;
 				LOGGER.log(Level.INFO, report);
 			}
+			
+			//setClassifiers
+			List<String> classifierList = new ArrayList<>();
+			classifierList.add("RandomForest");
+			classifierList.add("NaiveBayes");
+			classifierList.add("IBk");
+			
+			//setFeatureSelection
+			List<String> featureSelectionList = new ArrayList<>();
+			featureSelectionList.add("no_feature_selection");
+			featureSelectionList.add("BestFirst");
+			
+			//setSampling
+			List<String> samplingList = new ArrayList<>();
+			samplingList.add("no_sampling");
+			samplingList.add("Oversampling");
+			samplingList.add("Undersampling");
+			samplingList.add("SMOTE");
+			
+			//setCostSensitive
+			List<String> costList = new ArrayList<>();
+			costList.add("no_cost");
+			costList.add("Sensitive_Threshold");
+			costList.add("Sensitive_Learning");
+			
+			wm.walkForward(classifierList, featureSelectionList, samplingList, costList);
 		}
 		
 		

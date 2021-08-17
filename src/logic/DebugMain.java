@@ -17,19 +17,20 @@ import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.CSVLoader;
 import weka.core.converters.ConverterUtils.DataSource;
+import weka.filters.Filter;
 
 public class DebugMain {
 	
 	public static void main(String[] args) throws Exception, IOException, GitAPIException {
 		
 		//String gitUrl = "https://github.com/apache/avro";
-		/*String gitUrl = "https://github.com/apache/bookkeeper";
+		String gitUrl = "https://github.com/apache/bookkeeper";
 		
 		//Parse project name
 		String[] splitted = gitUrl.split("/");
 		String projName = splitted[splitted.length -1];
 		
-		GitBoundary gb = new GitBoundary(gitUrl);
+		/*GitBoundary gb = new GitBoundary(gitUrl);
 		
 		List<Commit> commits; 
 		Commit commit;
@@ -245,9 +246,9 @@ public class DebugMain {
 		//System.out.println(data);
 		int numReleases = data.attribute(0).numValues();
 		//int numReleases = data.numAttributes();
-		System.out.println("bookkeeper "+numReleases);
+		//System.out.println("bookkeeper "+numReleases);
 		
-		WekaManager wm = new WekaManager("output/avro.csv");
+		WekaManager wm = new WekaManager("output/avro.csv", projName);
 		
 		/*Instances filtered = wm.featureSelection(data);
 		
@@ -258,10 +259,25 @@ public class DebugMain {
 			System.out.println(filtered.attribute(i).name());
 		}*/
 		
-		Instance instance = data.get(4);
+		//Instance instance = data.get(4);
 		//for(Instance instance: data) {
 			//System.out.println("value "+instance.value(data.numAttributes()-1));
 		//}
+		
+		/*int buggyCount = wm.countBuggyInstances(data);
+		int notBuggy = data.size() - buggyCount;
+		
+		System.out.println("buggy "+buggyCount+" not buggy"+notBuggy);
+		
+		data.setClassIndex(data.numAttributes()-1);
+		Instances inst = wm.oversampling(data);
+		
+		
+		int buggyCountAfter = wm.countBuggyInstances(inst);
+		int notBuggyAfter = inst.size() - buggyCountAfter;
+		
+		System.out.println("buggy "+buggyCountAfter+" not buggy"+notBuggyAfter);
+		*/
 		
 		//System.out.println("SampleSizePerc "+wm.getSampleSizePercent(data));
 		

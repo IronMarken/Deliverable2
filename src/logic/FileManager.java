@@ -18,7 +18,7 @@ public class FileManager {
 	
 	private static final Logger LOGGER = Logger.getLogger(FileManager.class.getName());
 	private static final String DIR_NAME = "output";
-	private static final String[] COLUMNS = new String[] {"Release number","Java file", "Size", "LOC touched", "NR", "NAuth", "LOC added","MAX LOC added", "AVG LOC added", "Churn", "MAX Churn", "AVG Churn", "ChgSetSize", "MAX ChgSet", "AVG ChgSet", "Age","WeightedAge" ,"Buggy"};
+	private static final String[] COLUMNS = new String[] {"ReleaseNumber","JavaFile", "Size", "LOCtouched", "NR", "NAuth", "LOCadded","MAX_LOCadded", "AVG_LOCadded", "Churn", "MAX_Churn", "AVG_Churn", "ChgSetSize", "MAX_ChgSet", "AVG_ChgSet", "Age","WeightedAge" ,"Buggy"};
 	private static final String FILE_EXT = ".csv";
 	
 	public FileManager(String fileName) {
